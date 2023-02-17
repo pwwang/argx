@@ -1,0 +1,64 @@
+prog = "test"
+# usage = "test usage"
+description = """
+test description
+"""
+epilog = """
+test epilog
+"""
+prefix_chars = "-"
+fromfile_prefix_chars = "@"
+add_help = "+"
+exit_on_error = true
+exit_on_void = true
+allow_abbrev = true
+
+[[groups]]
+title = "test group1"
+description = "Some description1"
+show = false
+[[groups.arguments]]
+flags = ["-a", "--aaa"]
+dest = "aaa"
+action = "store"
+type = "py"
+
+[[namespaces]]
+name = "ns"
+title = "namespace ns"
+
+[[arguments]]
+flags = ["-b", "--bbb"]
+
+[[arguments]]
+flags = ["--ns.a", "--ns.aaa"]
+help = "ns.aaa help"
+
+[[commands]]
+name = "cmd1"
+description = "cmd1 description"
+
+[[commands.arguments]]
+flags = ["-c", "--ccc"]
+default = 3
+
+[[commands.commands]]
+name = "cmd11"
+description = "cmd11 description"
+
+[[commands.commands.arguments]]
+flags = ["-f", "--fff"]
+default = 8
+
+[[mutually_exclusive_groups]]
+required = true
+
+[[mutually_exclusive_groups.arguments]]
+flags = ["-d", "--ddd"]
+default = false
+action = "store_true"
+
+[[mutually_exclusive_groups.arguments]]
+flags = ["-e", "--eee"]
+default = false
+action = "store_true"
