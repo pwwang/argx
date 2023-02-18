@@ -1,5 +1,7 @@
 # argparse-charged
 
+[![pypi][1]][2] [![tag][3]][2] [![codacy quality][4]][5] [![codacy quality][6]][5] ![github action][7] ![pyver][8]
+
 Supercharged argparse for Python
 
 ## Installation
@@ -261,3 +263,12 @@ optional arguments:
 All features are optional. You can use `argparse-charged` as a drop-in replacement for `argparse`.
 
 `argparse-charged` supports python `3.7+`. Some of the later-introduced features are also supported in python 3.7. For example, `exit_on_error` is added in python 3.9, `argparse-charged` supports in python 3.7 and python 3.8. `extend` action is added in python 3.8, `argparse-charged` supports in python 3.7.
+
+[1]: https://img.shields.io/pypi/v/argparse-charged.svg?style=flat-square
+[2]: https://pypi.org/project/argparse-charged/
+[3]: https://img.shields.io/github/tag/pwwang/argparse-charged.svg?style=flat-square
+[4]: https://img.shields.io/codacy/grade/c5eaafcde482437b901b1acd2b70420e.svg?style=flat-square
+[5]: https://app.codacy.com/gh/pwwang/argparse-charged/dashboard
+[6]: https://img.shields.io/codacy/coverage/c5eaafcde482437b901b1acd2b70420e.svg?style=flat-square
+[7]: https://img.shields.io/github/actions/workflow/status/pwwang/argparse-charged/build.yml?style=flat-square
+[8]: https://img.shields.io/pypi/pyversions/argparse-charged.svg?style=flat-square
