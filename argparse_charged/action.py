@@ -7,7 +7,8 @@ from argparse import (
     _AppendAction,
     _AppendConstAction,
     _CountAction,
-    _ExtendAction,
+    # Introduced in python3.9
+    # _ExtendAction,
 )
 
 from .utils import get_ns_dest, copy_items, add_attribute
@@ -103,8 +104,7 @@ class CountAction(_CountAction):
         setattr(ns, dest, value + 1)
 
 
-@add_attribute("show", True)
-class ExtendAction(_ExtendAction):
+class ExtendAction(AppendAction):
     def __call__(  # type: ignore[override]
         self,
         parser: ArgumentParser,

@@ -62,21 +62,23 @@ class ArgumentParser(APArgumentParser):
     ) -> None:
         old_add_help = add_help
         add_help = False
-        super().__init__(
-            prog=prog,
-            usage=usage,
-            description=description,
-            epilog=epilog,
-            parents=parents,
-            formatter_class=formatter_class,
-            prefix_chars=prefix_chars,
-            fromfile_prefix_chars=fromfile_prefix_chars,
-            argument_default=argument_default,
-            conflict_handler=conflict_handler,
-            add_help=add_help,
-            allow_abbrev=allow_abbrev,
-            exit_on_error=exit_on_error,
-        )
+        kwargs = {
+            "prog": prog,
+            "usage": usage,
+            "description": description,
+            "epilog": epilog,
+            "parents": parents,
+            "formatter_class": formatter_class,
+            "prefix_chars": prefix_chars,
+            "fromfile_prefix_chars": fromfile_prefix_chars,
+            "argument_default": argument_default,
+            "conflict_handler": conflict_handler,
+            "add_help": add_help,
+            "allow_abbrev": allow_abbrev,
+        }
+        if sys.version_info >= (3, 9):  # pragma: no cover
+            kwargs["exit_on_error"] = exit_on_error
+        super().__init__(**kwargs)
         self.exit_on_void = exit_on_void
 
         # Register our actions to override argparse's or add new ones

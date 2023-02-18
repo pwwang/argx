@@ -1,4 +1,4 @@
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Tuple
 from argparse import SUPPRESS, Action, HelpFormatter, _SubParsersAction
 
 from .utils import showable
@@ -21,7 +21,7 @@ class ChargedHelpFormatter(HelpFormatter):
         self,
         action: Action,
         default_metavar: str,
-    ) -> Callable[[int], tuple[str, ...]]:
+    ) -> Callable[[int], Tuple[str, ...]]:
         """Format metavar in case there are namespace in it"""
         fmt = super()._metavar_formatter(action, default_metavar)
 

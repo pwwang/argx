@@ -18,6 +18,7 @@ pip install -U argparse-charged
 - List action: Store a list of values. Different from `append` and `extend`, the initial value is cleared.
 - Addtional types: Some additional types to convert the values of arguments
 - Configuration file to create the parser: Instead of creating the parser by code, you can also create it by a configuration file
+- Backward compatibility: All features are optional. You can use `argparse-charged` as a drop-in replacement for `argparse`.
 
 ### Option `exit_on_void`
 
@@ -254,3 +255,9 @@ optional arguments:
   -h, --help            show help message and exit
   -a ABC, --abc ABC     Optiona a help
 ```
+
+### Backward compatibility
+
+All features are optional. You can use `argparse-charged` as a drop-in replacement for `argparse`.
+
+`argparse-charged` supports python `3.7+`. Some of the later-introduced features are also supported in python 3.7. For example, `exit_on_error` is added in python 3.9, `argparse-charged` supports in python 3.7 and python 3.8. `extend` action is added in python 3.8, `argparse-charged` supports in python 3.7.
