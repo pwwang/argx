@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 from argparse import Namespace
-from os import PathLike
+from typing import TYPE_CHECKING, Any, Callable, Type
+
+if TYPE_CHECKING:
+    from os import PathLike
 
 
-def import_pyfile(pyfile: PathLike) -> dict:
+def import_pyfile(pyfile: PathLike | str) -> dict:
     """Import a python file and return the globals dictionary"""
     import importlib.util
 
@@ -13,24 +18,6 @@ def import_pyfile(pyfile: PathLike) -> dict:
         return module.args
     except AttributeError:
         raise AttributeError("No `args` variables found") from None
-
-
-def update_actions_with_preset(actions, conf):
-    """Update the actions with the configuration"""
-    for action in actions:
-        if "." not in action.dest and action.dest in conf:
-            action.default = conf[action.dest]
-            action.required = False
-        elif "." in action.dest:
-            parts = action.dest.split(".")
-            try:
-                cf = conf
-                for part in parts[:-1]:
-                    cf = cf[part]
-                action.default = cf[parts[-1]]
-                action.required = False
-            except KeyError:
-                continue
 
 
 def get_ns_dest(namespace: Namespace, dest: str) -> tuple[Namespace, str]:
@@ -51,7 +38,7 @@ def get_ns_dest(namespace: Namespace, dest: str) -> tuple[Namespace, str]:
     return ns, keys[-1]
 
 
-def copy_items(items):  # pragma: no cover
+def copy_items(items: Any) -> Any:  # pragma: no cover
     """Copy items if needed, copied from argparse"""
     if items is None:
         return []
@@ -64,8 +51,8 @@ def copy_items(items):  # pragma: no cover
     return copy.copy(items)
 
 
-def add_attribute(attr, default=None):
-    """Add an attribute to a class"""
+def add_attribute(attr: str, default: Any = None) -> Callable[[Type], Type]:
+    """Add an attribute to a class, working as a decorator"""
     def deco(cls):
         old_init = cls.__init__
 
@@ -80,6 +67,6 @@ def add_attribute(attr, default=None):
     return deco
 
 
-def showable(obj):
+def showable(obj: Any) -> bool:
     """Return True if the object is showable"""
     return getattr(obj, "show", True)

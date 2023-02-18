@@ -50,8 +50,11 @@ def test_load_defaults_from_file():
     defaultsfile = Path(__file__).parent / "configs" / "defaults.toml"
     parser = ArgumentParser()
     parser.add_argument("-a", required=True, type=int)
-    parsed = parser.parse_args([f"@{defaultsfile}"])
+    command = parser.add_command("status")
+    command.add_argument("--branch")
+    parsed = parser.parse_args([f"@{defaultsfile}", "status"])
     assert parsed.a == 1
+    assert parsed.branch == "dev"
 
     defaultspy = Path(__file__).parent / "configs" / "defaults.py"
     parser = ArgumentParser()
@@ -70,7 +73,7 @@ def test_load_defaults_from_file():
 
 def test_load_from_config():
     configfile = Path(__file__).parent / "configs" / "config.toml"
-    parser = ArgumentParser.from_config(configfile)
+    parser = ArgumentParser.from_configs(configfile)
     parsed = parser.parse_args("-d cmd1 cmd11 -f 1".split())
     assert parsed.COMMAND == "cmd1"
     assert parsed.COMMAND2 == "cmd11"

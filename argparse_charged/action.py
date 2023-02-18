@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING, Any, Sequence
 from argparse import (
     _HelpAction,
     _StoreAction,
@@ -11,19 +12,33 @@ from argparse import (
 
 from .utils import get_ns_dest, copy_items, add_attribute
 
+if TYPE_CHECKING:
+    from argparse import Namespace
+    from .parser import ArgumentParser
+
 
 @add_attribute("show", True)
 class StoreAction(_StoreAction):
-
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(  # type: ignore[override]
+        self,
+        parser: ArgumentParser,
+        namespace: Namespace,
+        values: str | Sequence[Any] | None,
+        option_string: str | None = None,
+    ) -> None:
         ns, dest = get_ns_dest(namespace, self.dest)
         setattr(ns, dest, values)
 
 
 @add_attribute("show", True)
 class StoreConstAction(_StoreConstAction):
-
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(  # type: ignore[override]
+        self,
+        parser: ArgumentParser,
+        namespace: Namespace,
+        values: str | Sequence[Any] | None,
+        option_string: str | None = None,
+    ) -> None:
         ns, dest = get_ns_dest(namespace, self.dest)
         setattr(ns, dest, self.const)
 
@@ -42,8 +57,13 @@ class StoreFalseAction(StoreConstAction):
 
 @add_attribute("show", True)
 class AppendAction(_AppendAction):
-
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(  # type: ignore[override]
+        self,
+        parser: ArgumentParser,
+        namespace: Namespace,
+        values: str | Sequence[Any] | None,
+        option_string: str | None = None,
+    ) -> None:
         ns, dest = get_ns_dest(namespace, self.dest)
         items = getattr(ns, dest, None)
         items = copy_items(items)
@@ -53,8 +73,13 @@ class AppendAction(_AppendAction):
 
 @add_attribute("show", True)
 class AppendConstAction(_AppendConstAction):
-
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(  # type: ignore[override]
+        self,
+        parser: ArgumentParser,
+        namespace: Namespace,
+        values: str | Sequence[Any] | None,
+        option_string: str | None = None,
+    ) -> None:
         ns, dest = get_ns_dest(namespace, self.dest)
         items = getattr(ns, dest, None)
         items = copy_items(items)
@@ -64,8 +89,13 @@ class AppendConstAction(_AppendConstAction):
 
 @add_attribute("show", True)
 class CountAction(_CountAction):
-
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(  # type: ignore[override]
+        self,
+        parser: ArgumentParser,
+        namespace: Namespace,
+        values: str | Sequence[Any] | None,
+        option_string: str | None = None,
+    ) -> None:
         ns, dest = get_ns_dest(namespace, self.dest)
         value = getattr(ns, dest, None)
         if value is None:
@@ -75,8 +105,13 @@ class CountAction(_CountAction):
 
 @add_attribute("show", True)
 class ExtendAction(_ExtendAction):
-
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(  # type: ignore[override]
+        self,
+        parser: ArgumentParser,
+        namespace: Namespace,
+        values: str | Sequence[Any] | None,
+        option_string: str | None = None,
+    ) -> None:
         ns, dest = get_ns_dest(namespace, self.dest)
         items = getattr(ns, dest, None)
         items = copy_items(items)
@@ -91,7 +126,13 @@ class ListAction(AppendAction):
         self.received = False
         super().__init__(*args, **kwargs)
 
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(  # type: ignore[override]
+        self,
+        parser: ArgumentParser,
+        namespace: Namespace,
+        values: str | Sequence[Any] | None,
+        option_string: str | None = None,
+    ) -> None:
         ns, dest = get_ns_dest(namespace, self.dest)
         if not self.received:
             items = []
@@ -106,8 +147,13 @@ class ListAction(AppendAction):
 
 @add_attribute("show", True)
 class HelpAction(_HelpAction):
-
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(  # type: ignore[override]
+        self,
+        parser: ArgumentParser,
+        namespace: Namespace,
+        values: str | Sequence[Any] | None,
+        option_string: str | None = None,
+    ) -> None:
         parser.print_help(
             plus=(
                 (parser.add_help == "+" and "+" in option_string)

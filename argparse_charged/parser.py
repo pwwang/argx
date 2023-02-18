@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import sys
-from typing import Sequence
+from typing import IO, TYPE_CHECKING, Any, Sequence
 from pathlib import Path
 from gettext import gettext as _
 from argparse import (
     SUPPRESS,
+    _SubParsersAction,
     _ArgumentGroup as APArgumentGroup,
     ArgumentParser as APArgumentParser,
     Namespace,
@@ -17,7 +18,6 @@ from . import type_
 from .utils import (
     get_ns_dest,
     import_pyfile,
-    update_actions_with_preset,
     add_attribute,
     showable,
 )
@@ -35,6 +35,9 @@ from .action import (
 )
 from .formatter import ChargedHelpFormatter
 
+if TYPE_CHECKING:
+    from argparse import _ActionT, _FormatterClass
+
 
 @add_attribute("level", 0)
 class ArgumentParser(APArgumentParser):
@@ -42,22 +45,41 @@ class ArgumentParser(APArgumentParser):
 
     def __init__(
         self,
-        *args,
-        exit_on_void=True,
-        formatter_class=ChargedHelpFormatter,
-        **kwargs,
-    ):
-        fromfile_prefix_chars = kwargs.pop("fromfile_prefix_chars", "@")
-        old_add_help = kwargs.pop("add_help", True)
-        kwargs["add_help"] = False
+        prog: str | None = None,
+        usage: str | None = None,
+        description: str | None = None,
+        epilog: str | None = None,
+        parents: Sequence[ArgumentParser] = [],
+        formatter_class: _FormatterClass = ChargedHelpFormatter,
+        prefix_chars: str = "-",
+        fromfile_prefix_chars: str | None = "@",
+        argument_default: Any = None,
+        conflict_handler: str = "error",
+        add_help: bool | str = True,
+        allow_abbrev: bool = True,
+        exit_on_error: bool = True,
+        exit_on_void: bool = False,
+    ) -> None:
+        old_add_help = add_help
+        add_help = False
         super().__init__(
-            *args,
-            **kwargs,
+            prog=prog,
+            usage=usage,
+            description=description,
+            epilog=epilog,
+            parents=parents,
             formatter_class=formatter_class,
+            prefix_chars=prefix_chars,
             fromfile_prefix_chars=fromfile_prefix_chars,
+            argument_default=argument_default,
+            conflict_handler=conflict_handler,
+            add_help=add_help,
+            allow_abbrev=allow_abbrev,
+            exit_on_error=exit_on_error,
         )
         self.exit_on_void = exit_on_void
 
+        # Register our actions to override argparse's or add new ones
         self.register("action", None, StoreAction)
         self.register("action", "store", StoreAction)
         self.register("action", "store_const", StoreConstAction)
@@ -74,8 +96,9 @@ class ArgumentParser(APArgumentParser):
         self.register("type", "path", Path)
         self.register("type", "auto", type_.auto)
 
+        # Add help option to support + for more options
         default_prefix = (
-            '-' if '-' in self.prefix_chars else self.prefix_chars[0]
+            "-" if "-" in self.prefix_chars else self.prefix_chars[0]
         )
         if old_add_help is True:
             self.add_argument(
@@ -97,17 +120,47 @@ class ArgumentParser(APArgumentParser):
                     "show help message (with + to show more options) and exit"
                 ),
             )
-        self.add_help = old_add_help
+        # restore add_help
+        self.add_help = old_add_help  # type: ignore[assignment]
 
-    def add_subparser(self, name, **kwargs):
+    def add_subparser(self, name: str, **kwargs) -> ArgumentParser | Any:
+        """Add a subparser directly.
+
+        Instead of
+        >>> subparsers = parser.add_subparsers(...)
+        >>> parser_a = subparsers.add_parser("a", ...)
+        >>> parser_b = subparsers.add_parser("b", ...)
+
+        Now we can do
+        >>> parser_a = parser.add_subparser("a", ...)
+
+        Subparsers are automatically created when needed. This way, the
+        title will be set to "subcommands" and the dest will be set to
+        "COMMAND" or "COMMAND{level+1}" if the parser is not at level 0
+        (main parser). The subparsers will be required.
+
+        If you need to customize the subparsers, you can still use the
+        add_subparsers method in standard argparse way.
+
+        Args:
+            name (str): The name of the subparser
+            **kwargs: The arguments to pass to add_parser()
+
+        Returns:
+            ArgumentParser: The subparser
+        """
         if self._subparsers is None:
-            self._subparsers = self.add_subparsers(
+            self._subparsers = self.add_subparsers(  # type: ignore[assignment]
                 title=_("subcommands"),
                 required=True,
-                dest="COMMAND" if self.level == 0 else f"COMMAND{self.level+1}",
+                dest="COMMAND"
+                if self.level == 0
+                else f"COMMAND{self.level+1}",
             )
         kwargs.setdefault("help", f"The {name} command")
-        return self._subparsers.add_parser(name, level=self.level + 1, **kwargs)
+        return self._subparsers.add_parser(
+            name, level=self.level + 1, **kwargs
+        )
 
     add_command = add_subparser
 
@@ -118,8 +171,7 @@ class ArgumentParser(APArgumentParser):
     ) -> tuple[Namespace, list[str]]:
         """Parse known arguments.
 
-        If no arguments are provided, and exit_on_void is True, then
-        an error is given and the program exits.
+        Modify to handle exit_on_void and @file to load default values.
         """
         if args is None:  # pragma: no cover
             # args default to the system args
@@ -142,15 +194,12 @@ class ArgumentParser(APArgumentParser):
                     new_args.append(arg)
                 else:
                     try:
-                        conffile = arg[1:]
-                        if conffile.endswith(".py"):
-                            conf = import_pyfile(conffile)
-                            update_actions_with_preset(self._actions, conf)
-                        else:
-                            conf = Config.load(conffile)
-                            update_actions_with_preset(self._actions, conf)
+                        conf = arg[1:]
+                        if conf.endswith(".py"):
+                            conf = import_pyfile(conf)
+                        self.set_defaults_from_configs(conf)
                     except Exception as e:
-                        self.error(f"Cannot import [{conffile}]: {e}")
+                        self.error(f"Cannot import [{conf}]: {e}")
 
         # default Namespace built from parser defaults
         if namespace is None:
@@ -173,7 +222,50 @@ class ArgumentParser(APArgumentParser):
 
         return parsed_args, argv
 
-    def _add_action(self, action):
+    def set_defaults_from_configs(
+        self,
+        *configs: dict | str,
+        optionalize: bool = True,
+    ) -> None:
+        """Set default values from configs.
+
+        Args:
+            *configs (dict | str): The configs to load, either a dict or
+                a configuration file.
+            optionalize (bool): Whether to make the arguments optional if
+                they are required.
+        """
+        conf = Config.load(*configs)
+        for action in self._actions:
+            if "." not in action.dest and action.dest in conf:
+                action.default = conf[action.dest]
+                if optionalize:
+                    action.required = False
+            elif "." in action.dest:
+                parts = action.dest.split(".")
+                try:
+                    cf = conf
+                    for part in parts[:-1]:
+                        cf = cf[part]
+                    action.default = cf[parts[-1]]
+                    if optionalize:
+                        action.required = False
+                except KeyError:
+                    continue
+            # see if we need to update subparsers
+            if isinstance(action, _SubParsersAction):
+                for name, subparser in action._name_parser_map.items():
+                    if name in conf:
+                        subparser.set_defaults_from_configs(
+                            conf[name],
+                            optionalize=optionalize,
+                        )
+
+    def _add_action(self, action: _ActionT) -> _ActionT:
+        """Add an action to the parser.
+
+        Modify to handle namespace actions, like "--group.abc"
+        """
         if "." not in action.dest or isinstance(action, APArgumentGroup):
             return super()._add_action(action)
 
@@ -182,7 +274,7 @@ class ArgumentParser(APArgumentParser):
         group = None
 
         for i in range(1, len(keys)):
-            ns_key = ".".join(keys[: -i])
+            ns_key = ".".join(keys[:-i])
             for action_group in self._action_groups:
                 if (
                     isinstance(action_group, _NamespaceArgumentGroup)
@@ -198,8 +290,23 @@ class ArgumentParser(APArgumentParser):
 
         return group._add_action(action)
 
-    def add_namespace(self, name, title=None, **kwargs):
-        """Add a namespace to the parser"""
+    def add_namespace(
+        self,
+        name: str,
+        title: str | None = None,
+        **kwargs,
+    ) -> _NamespaceArgumentGroup:
+        """Add a namespace to the parser, which is actually an argument group
+
+        Args:
+            name (str): The name of the namespace
+                The name should match the first part of the dest of its actions.
+            title (str, optional): The title of the namespace.
+            **kwargs: The arguments to pass to add_argument_group()
+
+        Returns:
+            _NamespaceArgumentGroup: The namespace
+        """
         # Check if the namespace already exists
         for action_group in self._action_groups:
             if (
@@ -215,24 +322,40 @@ class ArgumentParser(APArgumentParser):
         self._action_groups.append(group)
         return group
 
-    def add_argument_group(self, *args, **kwargs):
+    def add_argument_group(self, *args, **kwargs) -> _ArgumentGroup:
+        """Add an argument group to the parser.
+
+        Modify to handle show.
+        """
         group = _ArgumentGroup(self, *args, **kwargs)
         self._action_groups.append(group)
         return group
 
-    def print_help(self, plus, file=None):
+    def print_help(  # type: ignore[override]
+        self,
+        plus: bool = False,
+        file: IO[str] | None = None,
+    ) -> None:
+        """Print the help message.
+
+        Modify to handle plus.
+        """
         if file is None:
             file = sys.stdout
 
         self._print_message(self.format_help(plus=plus), file)
 
-    def format_help(self, plus=True) -> str:
+    def format_help(self, plus: bool = True) -> str:
+        """Format the help message.
 
+        Modify to handle plus.
+        """
         formatter = self._get_formatter()
 
         # usage
-        formatter.add_usage(self.usage, self._actions,
-                            self._mutually_exclusive_groups)
+        formatter.add_usage(
+            self.usage, self._actions, self._mutually_exclusive_groups
+        )
 
         # description
         formatter.add_text(self.description)
@@ -246,7 +369,10 @@ class ArgumentParser(APArgumentParser):
                 continue
             formatter.start_section(action_group.title)
             formatter.add_text(action_group.description)
-            formatter.add_arguments(action_group._group_actions, plus)
+            formatter.add_arguments(  # type: ignore[call-arg]
+                action_group._group_actions,
+                plus,
+            )
             formatter.end_section()
 
         # epilog
@@ -257,20 +383,20 @@ class ArgumentParser(APArgumentParser):
 
     def _add_decedents(
         self,
-        mutually_exclusive_groups,
-        groups,
-        namespaces,
-        arguments,
-        commands,
-    ):
+        mutually_exclusive_groups: list[dict],
+        groups: list[dict],
+        namespaces: list[dict],
+        arguments: list[dict],
+        commands: list[dict],
+    ) -> None:
         """Add the decedents of the parser"""
         # Add the mutually exclusive groups
         for group_args in mutually_exclusive_groups:
             group_arguments = group_args.pop("arguments", [])
-            group = self.add_mutually_exclusive_group(**group_args)
+            mgroup = self.add_mutually_exclusive_group(**group_args)
             for argument in group_arguments:
                 flags = argument.pop("flags", [])
-                group.add_argument(*flags, **argument)
+                mgroup.add_argument(*flags, **argument)
 
         # Add the groups
         for group_args in groups:
@@ -310,7 +436,12 @@ class ArgumentParser(APArgumentParser):
                 command_commands,
             )
 
-    def _registry_get(self, registry_name, value, default=None):
+    def _registry_get(
+        self,
+        registry_name: str,
+        value: Any,
+        default: Any = None,
+    ) -> Any:
         # Allow type to be string
         if (
             registry_name == "type"
@@ -318,6 +449,7 @@ class ArgumentParser(APArgumentParser):
             and default == value
         ):
             import builtins
+
             # "int", "float", "str", "open", etc
             return self._registries[registry_name].get(
                 value,
@@ -333,7 +465,7 @@ class ArgumentParser(APArgumentParser):
         )
 
     @classmethod
-    def from_config(cls, *configs):
+    def from_configs(cls, *configs: dict | str) -> ArgumentParser:
         """Create an ArgumentParser from a configuration file"""
         config = Config.load(*configs)
         mutually_exclusive_groups = config.pop("mutually_exclusive_groups", [])
@@ -354,7 +486,6 @@ class ArgumentParser(APArgumentParser):
 
 @add_attribute("show", True)
 class _ArgumentGroup(APArgumentGroup):
-
     _registry_get = ArgumentParser._registry_get
 
 
