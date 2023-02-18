@@ -39,7 +39,7 @@ args = parser.parse_args([])
 
 ### Subcommand shortcut
 
-`argparse` requires to subparsers first and then add the subcommands to the subparsers.
+`argparse` requires to create subparsers first and then add the subcommands to the subparsers.
 `argparse-charged` allows to add subcommands directly to the main parser.
 
 ```python
@@ -155,7 +155,7 @@ You can also set `show=False` for argument groups.
 
 With standard `argparse`, when `fromfile_prefix_chars` is set, the arguments can be read from a file. The file can be specified with `@filename`. The arguments in the file are separated by newlines by default.
 
-With `argparse-charged`, `fromfile_prefix_chars` is set to `@` by default. Other than a text file to provide command line arguments, you can also provide other types of configuration files. The extension of the file can be `.json`, `.yaml`, `ini`, `env` or `.toml`.
+With `argparse-charged`, `fromfile_prefix_chars` is set to `@` by default. Other than a text file to provide command line arguments, you can also provide other types of configuration files. The extension of the file can be `.json`, `.yaml`, `.ini`, `.env` or `.toml`.
 
 ```python
 import argparse_charged as argparse
@@ -169,14 +169,6 @@ parser.add_argument('--baz', type=int)
 # { "foo": 1, "bar": 2, "baz": 3 }
 args = parser.parse_args(['@config.json'])
 # Namespace(foo=1, bar=2, baz=3)
-```
-
-```json
-{
-  "foo": 1,
-  "bar": 2,
-  "baz": 3
-}
 ```
 
 You can also use `set_defaults_from_configs` method:
