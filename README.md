@@ -254,7 +254,7 @@ optional arguments:
 
 All features are optional. You can use `argx` as a drop-in replacement for `argparse`.
 
-`argx` supports python `3.7+`. Some of the later-introduced features are also supported in python 3.7. For example, `exit_on_error` is added in python 3.9, `argx` supports in python 3.7 and python 3.8. `extend` action is added in python 3.8, `argx` supports in python 3.7.
+`argx` supports python `3.7+`. Some of the later-introduced features are also supported in python 3.7. For example, `extend` action is added in python 3.8, `argx` supports in python 3.7.
 
 [1]: https://img.shields.io/pypi/v/argx.svg?style=flat-square
 [2]: https://pypi.org/project/argx/
