@@ -155,7 +155,7 @@ You can also set `show=False` for argument groups.
 
 With standard `argparse`, when `fromfile_prefix_chars` is set, the arguments can be read from a file. The file can be specified with `@filename`. The arguments in the file are separated by newlines by default.
 
-With `argx`, `fromfile_prefix_chars` is set to `@` by default. Other than a text file to provide command line arguments, you can also provide other types of configuration files. The extension of the file can be `.json`, `.yaml`, `.ini`, `.env` or `.toml`.
+With `argx`, Other than a text file to provide command line arguments, you can also provide other types of configuration files. The extension of the file can be `.json`, `.yaml`, `.ini`, `.env` or `.toml`.
 
 ```python
 import argx as argparse

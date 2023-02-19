@@ -52,7 +52,7 @@ class ArgumentParser(APArgumentParser):
         parents: Sequence[ArgumentParser] = [],
         formatter_class: _FormatterClass = ChargedHelpFormatter,
         prefix_chars: str = "-",
-        fromfile_prefix_chars: str | None = "@",
+        fromfile_prefix_chars: str | None = None,
         argument_default: Any = None,
         conflict_handler: str = "error",
         add_help: bool | str = True,

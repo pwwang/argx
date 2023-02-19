@@ -48,7 +48,7 @@ def test_namespace_options():
 
 def test_load_defaults_from_file():
     defaultsfile = Path(__file__).parent / "configs" / "defaults.toml"
-    parser = ArgumentParser()
+    parser = ArgumentParser(fromfile_prefix_chars="@")
     parser.add_argument("-a", required=True, type=int)
     command = parser.add_command("status")
     command.add_argument("--branch")
@@ -57,7 +57,7 @@ def test_load_defaults_from_file():
     assert parsed.branch == "dev"
 
     defaultspy = Path(__file__).parent / "configs" / "defaults.py"
-    parser = ArgumentParser()
+    parser = ArgumentParser(fromfile_prefix_chars="@")
     parser.add_argument("--ns.v", required=True, type=int)
     parser.add_argument("--ns.vv", required=True, type=int)
     parsed = parser.parse_args([f"@{defaultspy}", "--ns.vv", "3"])
@@ -65,7 +65,7 @@ def test_load_defaults_from_file():
     assert parsed.ns.vv == 3
 
     bad_defaultspy = Path(__file__).parent / "configs" / "bad_defaults.py"
-    parser = ArgumentParser()
+    parser = ArgumentParser(fromfile_prefix_chars="@")
     parser.add_argument("--ns.v", required=True, type=int)
     with pytest.raises(SystemExit):
         parser.parse_args([f"@{bad_defaultspy}"])
