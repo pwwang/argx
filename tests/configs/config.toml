@@ -1,7 +1,7 @@
 prog = "test"
 # usage = "test usage"
 description = """
-test description
+test description {name}
 """
 epilog = """
 test epilog

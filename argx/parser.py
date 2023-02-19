@@ -467,14 +467,28 @@ class ArgumentParser(APArgumentParser):
         )
 
     @classmethod
-    def from_configs(cls, *configs: dict | str) -> ArgumentParser:
-        """Create an ArgumentParser from a configuration file"""
+    def from_configs(cls, *configs: dict | str, **kwargs) -> ArgumentParser:
+        """Create an ArgumentParser from a configuration file
+
+        Args:
+            *configs: The configuration files or dicts to load
+            **kwargs: Additional variables to format description of the main
+                parser
+                >>> parser = ArgumentParser.from_configs(
+                >>>   {"description": "Hello {name}"}, name="World"
+                >>> )
+
+        Returns:
+            ArgumentParser: The ArgumentParser
+        """
         config = Config.load(*configs)
         mutually_exclusive_groups = config.pop("mutually_exclusive_groups", [])
         groups = config.pop("groups", [])
         namespaces = config.pop("namespaces", [])
         arguments = config.pop("arguments", [])
         commands = config.pop("commands", [])
+        if "description" in config:
+            config["description"] = config["description"].format(**kwargs)
         parser = cls(**config)
         parser._add_decedents(
             mutually_exclusive_groups,
