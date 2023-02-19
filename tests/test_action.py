@@ -1,6 +1,6 @@
 import pytest  # noqa: F401
-from argparse_charged import ArgumentParser
-from argparse_charged.action import (
+from argx import ArgumentParser
+from argx.action import (
     StoreAction,
     StoreConstAction,
     StoreTrueAction,

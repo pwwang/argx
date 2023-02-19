@@ -11,4 +11,4 @@ pip install git+https://...
 """
 from setuptools import setup
 
-setup(name="argparse-charged")
+setup(name="argx")

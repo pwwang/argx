@@ -1,5 +1,5 @@
 import pytest  # noqa: F401
-from argparse_charged import ArgumentParser
+from argx import ArgumentParser
 
 
 def test_py():

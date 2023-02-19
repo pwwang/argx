@@ -23,7 +23,7 @@ jobs:
           python -m pip install poetry
           poetry install -v
       - name: Run flake8
-        run: flake8 argparse_charged
+        run: flake8 argx
       - name: Test with pytest
         run: poetry run pytest tests/ --junitxml=junit/test-results-${{ matrix.python-version }}.xml
       - name: Upload pytest test results

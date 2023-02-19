@@ -1,4 +1,4 @@
-"""Additional types for argparse_charged"""
+"""Additional types for argx"""
 from typing import Any
 
 

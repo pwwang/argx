@@ -19,21 +19,21 @@ repos:
         args:
             - get_ver() { echo $(egrep "^__version|^version" $1 | cut -d= -f2 | sed 's/\"\| //g'); };
               v1=`get_ver pyproject.toml`;
-              v2=`get_ver argparse_charged/__init__.py`;
+              v2=`get_ver argx/__init__.py`;
               if [[ $v1 == $v2 ]]; then exit 0; else exit 1; fi
         pass_filenames: false
-        files: ^pyproject\.toml|argparse_charged/__init__\.py$
+        files: ^pyproject\.toml|argx/__init__\.py$
     -   id: pytest
         name: Run pytest
         entry: pytest
         language: system
         args: [tests/]
         pass_filenames: false
-        files: ^tests/.+$|^argparse_charged/.+$
+        files: ^tests/.+$|^argx/.+$
     -   id: flake8
         name: Run flake8
         entry: flake8
         language: system
-        args: [argparse_charged]
+        args: [argx]
         pass_filenames: false
-        files: ^argparse_charged/.+$
+        files: ^argx/.+$

@@ -1,6 +1,6 @@
 import pytest  # noqa: F401
 from pathlib import Path
-from argparse_charged import ArgumentParser
+from argx import ArgumentParser
 
 
 def test_exit_on_void():
