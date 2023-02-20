@@ -18,6 +18,8 @@ pip install -U argx
 - Brief help message for massive arguments: Show only the most important arguments in the help message
 - Defaults from file: Read default values from a configuration file by API or from command line
 - List action: Store a list of values. Different from `append` and `extend`, the initial value is cleared.
+- Grouping required arguments by default: Put required arguments in 'required arguments' group, instead of 'optional arguments' group
+- Order of groups in help: Allow to add an `order` attribute to groups to change the order of groups in help message
 - Addtional types: Some additional types to convert the values of arguments
 - Configuration file to create the parser: Instead of creating the parser by code, you can also create it by a configuration file
 - Backward compatibility: All features are optional. You can use `argx` as a drop-in replacement for `argparse`.
@@ -193,6 +195,62 @@ parser.add_argument('--bar', action='append', default=[1, 2, 3], type=int)
 args = parser.parse_args('--foo 4 --foo 5 --bar 4 --bar 5'.split())
 # Namespace(foo=[4, 5], bar=[1, 2, 3, 4, 5])
 ```
+
+### Grouping required arguments by default
+
+By default, `argparse` puts both `required=True` and `required=False` arguments in the same group (optional arguments), which is sometimes confusing. `argx` groups `required=True` arguments in a separate group (required arguments).
+
+```python
+import argx as argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--foo')
+parser.add_argument('--bar', required=True)
+
+parser.print_help()
+```
+
+```shell
+usage: test.py [-h] [--foo FOO] --bar BAR
+
+required arguments:
+  --bar BAR
+
+optional arguments:
+  -h, --help            show help message and exit
+  --foo FOO
+```
+
+### Order of groups in help
+
+Allow to add an `order` attribute to groups to change the order of groups in help message
+
+```python
+import argx as argparse
+
+parser = argparse.ArgumentParser()
+group1 = parser.add_argument_group('group1', order=2)
+group1.add_argument('--foo')
+group2 = parser.add_argument_group('group2', order=1)
+group2.add_argument('--bar')
+
+parser.print_help()
+```
+
+```shell
+usage: test.py [-h] [--bar BAR] [--foo FOO]
+
+optional arguments:
+  -h, --help            show help message and exit
+
+group2:
+  --bar BAR
+
+group1:
+  --foo FOO
+```
+
+The order by default is 0. The groups with the same order are sorted by title. Groups with small numbers are displayed first. `required arguments` has a `order` of -1.
 
 ### Additional types
 

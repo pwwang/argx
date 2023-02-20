@@ -74,9 +74,14 @@ def test_load_defaults_from_file():
 def test_load_from_config():
     configfile = Path(__file__).parent / "configs" / "config.toml"
     parser = ArgumentParser.from_configs(configfile, name="test_config")
-    parsed = parser.parse_args("-d cmd1 cmd11 -f 1".split())
+    parsed = parser.parse_args("-d -b 2 cmd1 cmd11 -f 1".split())
     assert parsed.COMMAND == "cmd1"
     assert parsed.COMMAND2 == "cmd11"
 
     help_str = parser.format_help()
     assert "test_config" in help_str
+    assert "required arguments" in help_str
+    assert (
+        help_str.find("required arguments")
+        < help_str.find("optional arguments")
+    )

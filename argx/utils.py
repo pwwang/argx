@@ -48,17 +48,34 @@ def copy_items(items: Any) -> Any:  # pragma: no cover
     if type(items) is list:
         return items[:]
     import copy
+
     return copy.copy(items)
 
 
-def add_attribute(attr: str, default: Any = None) -> Callable[[Type], Type]:
-    """Add an attribute to a class, working as a decorator"""
+def add_attribute(
+    attr: str,
+    default: Any = None,
+    attr2: str | None = None,
+    default2: Any = None,
+) -> Callable[[Type], Type]:
+    """Add an attribute to a class, working as a decorator
+
+    Args:
+        attr: The attribute name
+        default: The default value
+        attr2: The second attribute name
+        default2: The second default value
+    """
+
     def deco(cls):
         old_init = cls.__init__
 
         def new_init(self, *args, **kwargs):
             value = kwargs.pop(attr, default)
             setattr(self, attr, value)
+            if attr2 is not None:
+                value2 = kwargs.pop(attr2, default2)
+                setattr(self, attr2, value2)
             old_init(self, *args, **kwargs)
 
         cls.__init__ = new_init

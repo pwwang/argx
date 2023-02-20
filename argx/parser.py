@@ -125,6 +125,11 @@ class ArgumentParser(APArgumentParser):
         # restore add_help
         self.add_help = old_add_help  # type: ignore[assignment]
 
+        self._required_actions = self.add_argument_group(
+            _("required arguments"),
+            order=-1,
+        )
+
     def add_subparser(self, name: str, **kwargs) -> ArgumentParser | Any:
         """Add a subparser directly.
 
@@ -269,6 +274,8 @@ class ArgumentParser(APArgumentParser):
         Modify to handle namespace actions, like "--group.abc"
         """
         if "." not in action.dest or isinstance(action, APArgumentGroup):
+            if action.required:
+                return self._required_actions._add_action(action)
             return super()._add_action(action)
 
         # Split the destination into a list of keys
@@ -363,7 +370,10 @@ class ArgumentParser(APArgumentParser):
         formatter.add_text(self.description)
 
         # positionals, optionals and user-defined groups
-        for action_group in self._action_groups:
+        for action_group in sorted(
+            self._action_groups,
+            key=lambda x: (x.order, x.title),
+        ):
             if not plus and not showable(action_group):
                 for action in action_group._group_actions:
                     # hide them in usage as well
@@ -500,7 +510,7 @@ class ArgumentParser(APArgumentParser):
         return parser
 
 
-@add_attribute("show", True)
+@add_attribute("show", True, "order", 0)
 class _ArgumentGroup(APArgumentGroup):
     _registry_get = ArgumentParser._registry_get
 

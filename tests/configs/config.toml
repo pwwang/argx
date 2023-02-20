@@ -29,6 +29,7 @@ title = "namespace ns"
 
 [[arguments]]
 flags = ["-b", "--bbb"]
+required = true
 
 [[arguments]]
 flags = ["--ns.a", "--ns.aaa"]
