@@ -25,6 +25,7 @@ type = "py"
 
 [[namespaces]]
 name = "ns"
+order = 1
 title = "namespace ns"
 
 [[arguments]]

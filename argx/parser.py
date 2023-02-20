@@ -79,7 +79,9 @@ class ArgumentParser(APArgumentParser):
         if sys.version_info >= (3, 9):  # pragma: no cover
             kwargs["exit_on_error"] = exit_on_error
         super().__init__(**kwargs)
+
         self.exit_on_void = exit_on_void
+        self._subparsers_action = None
 
         # Register our actions to override argparse's or add new ones
         self.register("action", None, StoreAction)
@@ -130,6 +132,22 @@ class ArgumentParser(APArgumentParser):
             order=-1,
         )
 
+    def add_subparsers(self, order: int = 99, **kwargs):
+        """Add subparsers to the parser.
+
+        Args:
+            order (int): The order of the subparsers group
+            **kwargs: The arguments to pass to add_argument_group()
+
+        Returns:
+            _SubParsersAction: The subparsers
+        """
+        action = super().add_subparsers(**kwargs)
+        if self._subparsers is not self._positionals:
+            self._subparsers.order = order
+
+        return action
+
     def add_subparser(self, name: str, **kwargs) -> ArgumentParser | Any:
         """Add a subparser directly.
 
@@ -156,8 +174,8 @@ class ArgumentParser(APArgumentParser):
         Returns:
             ArgumentParser: The subparser
         """
-        if self._subparsers is None:
-            self._subparsers = self.add_subparsers(  # type: ignore[assignment]
+        if self._subparsers_action is None:
+            self._subparsers_action = self.add_subparsers(
                 title=_("subcommands"),
                 required=True,
                 dest="COMMAND"
@@ -165,7 +183,7 @@ class ArgumentParser(APArgumentParser):
                 else f"COMMAND{self.level+1}",
             )
         kwargs.setdefault("help", f"The {name} command")
-        return self._subparsers.add_parser(
+        return self._subparsers_action.add_parser(
             name, level=self.level + 1, **kwargs
         )
 
@@ -368,7 +386,6 @@ class ArgumentParser(APArgumentParser):
 
         # description
         formatter.add_text(self.description)
-
         # positionals, optionals and user-defined groups
         for action_group in sorted(
             self._action_groups,

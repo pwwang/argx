@@ -83,5 +83,5 @@ def test_load_from_config():
     assert "required arguments" in help_str
     assert (
         help_str.find("required arguments")
-        < help_str.find("optional arguments")
+        < help_str.find("option")
     )
