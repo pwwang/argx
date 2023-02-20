@@ -85,3 +85,5 @@ def test_load_from_config():
         help_str.find("required arguments")
         < help_str.find("option")
     )
+    # The newlines and spaces kept
+    assert "                          - newline help" in help_str

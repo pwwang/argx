@@ -46,3 +46,15 @@ class ChargedHelpFormatter(HelpFormatter):
             if not plus and not showable(action):
                 action.help = SUPPRESS
             self.add_argument(action)
+
+    def _split_lines(self, text, width):
+        lines = text.splitlines()
+        if len(lines) == 1:
+            return super()._split_lines(text, width)
+
+        import textwrap
+
+        def _wrap_line(line):
+            return textwrap.wrap(line, width, drop_whitespace=False)
+
+        return sum(map(_wrap_line, lines), [])

@@ -34,7 +34,7 @@ required = true
 
 [[arguments]]
 flags = ["--ns.a", "--ns.aaa"]
-help = "ns.aaa help"
+help = "ns.aaa help\n  - newline help"
 
 [[commands]]
 name = "cmd1"

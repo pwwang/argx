@@ -10,19 +10,20 @@ Supercharged argparse for Python
 pip install -U argx
 ```
 
-## Features
+## Features enhanced or added
 
-- Option `exit_on_void`: Exit with error if no arguments are provided
-- Subcommand shortcut: Adding subcommands directly, without `parser.add_subparsers()`
-- Namespace arguments: Access arguments like `--foo.bar` as `args.foo.bar`
-- Brief help message for massive arguments: Show only the most important arguments in the help message
-- Defaults from file: Read default values from a configuration file by API or from command line
-- List action: Store a list of values. Different from `append` and `extend`, the initial value is cleared.
-- Grouping required arguments by default: Put required arguments in 'required arguments' group, instead of 'optional arguments' group
-- Order of groups in help: Allow to add an `order` attribute to groups to change the order of groups in help message
-- Addtional types: Some additional types to convert the values of arguments
-- Configuration file to create the parser: Instead of creating the parser by code, you can also create it by a configuration file
-- Backward compatibility: All features are optional. You can use `argx` as a drop-in replacement for `argparse`.
+- [Option `exit_on_void`](#option-exit_on_void): Exit with error if no arguments are provided
+- [Subcommand shortcut](#subcommand-shortcut): Adding subcommands directly, without `parser.add_subparsers()`
+- [Namespace arguments](#namespace-arguments): Access arguments like `--foo.bar` as `args.foo.bar`
+- [Brief help message for massive arguments](#brief-help-message-for-massive-arguments): Show only the most important arguments in the help message
+- [Newlines kept in help](#newlines-kept-in-help): Newlines are kept in argument help if any
+- [Defaults from file](#defaults-from-files): Read default values from a configuration file by API or from command line
+- [List action](#list-action): Store a list of values. Different from `append` and `extend`, the initial value is cleared.
+- [Grouping required arguments by default](#grouping-required-arguments-by-default): Put required arguments in 'required arguments' group, instead of 'optional arguments' group
+- [Order of groups in help message](#order-of-groups-in-help-message): Allow to add an `order` attribute to groups to change the order of groups in help message
+- [Addtional types](#additional-types): Some additional types to convert the values of arguments
+- [Configuration file to create the parser](#configuration-file-to-create-the-parser): Instead of creating the parser by code, you can also create it by a configuration file
+- [Backward compatibility](#backward-compatibility): All features are optional. You can use `argx` as a drop-in replacement for `argparse`.
 
 ### Option `exit_on_void`
 
@@ -153,6 +154,28 @@ optional arguments:
 
 You can also set `show=False` for argument groups.
 
+### Newlines kept in help
+
+By default, `argparse` replaces the newlines with spaces in the argument help message. However, sometimes you want to keep the newlines. With `argx`, if there is not newline, it is handled as the default behavior. If there is a newline, the newlines and spaces are kept.
+
+```python
+import argx as argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--foo', help='foo\n- bar\n  indent also kept')
+parser.print_help()
+```
+
+```shell
+usage: test.py [-h] [--foo FOO]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --foo FOO             foo
+                        - bar
+                          indent also kept
+```
+
 ### Defaults from files
 
 With standard `argparse`, when `fromfile_prefix_chars` is set, the arguments can be read from a file. The file can be specified with `@filename`. The arguments in the file are separated by newlines by default.
@@ -221,7 +244,7 @@ optional arguments:
   --foo FOO
 ```
 
-### Order of groups in help
+### Order of groups in help message
 
 Allow to add an `order` attribute to groups to change the order of groups in help message
 
