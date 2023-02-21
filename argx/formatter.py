@@ -1,6 +1,8 @@
 from typing import Callable, Iterable, Tuple
 from argparse import SUPPRESS, Action, HelpFormatter, _SubParsersAction
 
+import re
+
 from .utils import showable
 
 
@@ -45,6 +47,19 @@ class ChargedHelpFormatter(HelpFormatter):
         for action in actions:
             if not plus and not showable(action):
                 action.help = SUPPRESS
+
+            if (
+                action.help is not SUPPRESS
+                and action.default is not None
+                and action.default is not SUPPRESS
+            ):
+                help = action.help or ""
+                if not re.search(r"\[default: ", help):
+                    sep = "\n" if "\n" in help else " "
+                    action.help = (
+                        f"{help}{sep}[default: {action.default}]"
+                    )
+
             self.add_argument(action)
 
     def _split_lines(self, text, width):
