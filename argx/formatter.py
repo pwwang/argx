@@ -54,11 +54,18 @@ class ChargedHelpFormatter(HelpFormatter):
                 and action.default is not SUPPRESS
             ):
                 help = action.help or ""
-                if not re.search(r"\[default: ", help):
+
+                if not re.search(r"\[(?:no)?default: ", help):
                     sep = "\n" if "\n" in help else " "
                     action.help = (
-                        f"{help}{sep}[default: {action.default}]"
+                        f"{help}{sep}[default: %(default)s]"
                     )
+
+            if (
+                isinstance(action.help, str)
+                and action.help.endswith("[nodefault]")
+            ):
+                action.help = action.help[:-11].rstrip()
 
             self.add_argument(action)
 

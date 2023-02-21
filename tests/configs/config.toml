@@ -34,7 +34,7 @@ required = true
 
 [[arguments]]
 flags = ["--ns.a", "--ns.aaa"]
-help = "ns.aaa help\n  - newline help"
+help = "ns.aaa help\n  - newline help [nodefault]"
 
 [[commands]]
 name = "cmd1"
@@ -51,6 +51,7 @@ description = "cmd11 description"
 
 [[commands.commands.arguments]]
 flags = ["-f", "--fff"]
+help = "fff help [default: eight]"
 default = 8
 
 [[mutually_exclusive_groups]]
