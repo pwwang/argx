@@ -28,5 +28,8 @@ def test_auto():
     ns = parser.parse_args(["--foo", 'FALSE'])
     assert ns.foo is False
 
+    ns = parser.parse_args(["--foo", 'NONE'])
+    assert ns.foo is None
+
     ns = parser.parse_args(["--foo", 'xy'])
     assert ns.foo == 'xy'

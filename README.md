@@ -327,6 +327,7 @@ args = parser.parse_args(
 - `auto`: Automatic type conversion.
   - `True` if the string is `True/TRUE/true`
   - `False` if the string is `False/FALSE/false`
+  - `None` if the string is `None/NONE/none`
   - An integer if the string can be converted to an integer
   - A float if the string can be converted to a float
   - A dict if the string is a JSON string

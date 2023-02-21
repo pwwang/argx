@@ -17,6 +17,8 @@ def auto(s: str) -> Any:
         return True
     if s in ("False", "FALSE", "false"):
         return False
+    if s in ("None", "NONE", "none"):
+        return None
 
     try:
         return int(s)
