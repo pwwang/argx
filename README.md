@@ -16,6 +16,7 @@ pip install -U argx
 - [Subcommand shortcut](#subcommand-shortcut): Adding subcommands directly, without `parser.add_subparsers()`
 - [Namespace arguments](#namespace-arguments): Access arguments like `--foo.bar` as `args.foo.bar`
 - [Brief help message for massive arguments](#brief-help-message-for-massive-arguments): Show only the most important arguments in the help message
+- [Default value in argument help](#default-value-in-argument-help): Show the default value in the help message of arguments
 - [Newlines kept in help](#newlines-kept-in-help): Newlines are kept in argument help if any
 - [Defaults from file](#defaults-from-files): Read default values from a configuration file by API or from command line
 - [List action](#list-action): Store a list of values. Different from `append` and `extend`, the initial value is cleared.
@@ -153,6 +154,30 @@ optional arguments:
 ```
 
 You can also set `show=False` for argument groups.
+
+### Default value in argument help
+
+With `argparse`, the default value is not shown in the help message. With `argx`, the default value is added to the help message automatically.
+
+```python
+import argx as argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--foo', type=int, default=1)
+parser.add_argument('--bar', type=int, default=2, help='bar [default: two]')
+parser.add_argument('--baz', type=int, default=3, help='baz [nodefault]')
+parser.print_help()
+```
+
+```shell
+usage: test.py [-h] [--foo FOO]
+
+optional arguments:
+  -h, --help            show help message and exit
+  --foo FOO             [default: 1]
+  --bar BAR             bar [default: two]
+  --baz BAZ             baz
+```
 
 ### Newlines kept in help
 
