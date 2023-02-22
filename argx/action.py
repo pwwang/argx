@@ -1,6 +1,8 @@
 from __future__ import annotations
+import json
 from typing import TYPE_CHECKING, Any, Sequence
 from argparse import (
+    Namespace,
     _HelpAction,
     _StoreAction,
     _StoreConstAction,
@@ -14,7 +16,6 @@ from argparse import (
 from .utils import get_ns_dest, copy_items, add_attribute
 
 if TYPE_CHECKING:
-    from argparse import Namespace
     from .parser import ArgumentParser
 
 
@@ -143,6 +144,39 @@ class ListAction(AppendAction):
 
         items.append(values)
         setattr(ns, dest, items)
+
+
+@add_attribute("show", True)
+class NamespaceAction(_StoreAction):
+    """Receive a json and parse and spread it to the namespace"""
+    def __call__(  # type: ignore[override]
+        self,
+        parser: ArgumentParser,
+        namespace: Namespace,
+        values: str | Sequence[Any] | None,
+        option_string: str | None = None,
+    ) -> None:
+        ns, dest = get_ns_dest(namespace, self.dest)
+        try:
+            parsed = json.loads(values)
+        except json.JSONDecodeError:
+            parser.error(f"Invalid json for {option_string}: {values}")
+
+        if not isinstance(parsed, dict):
+            parser.error(
+                f"Invalid json dictionary for {option_string}: {values}"
+            )
+
+        def _update_ns(nsc: Namespace, dct: dict[str, Any]) -> None:
+            for key, value in dct.items():
+                if not isinstance(value, dict):
+                    setattr(nsc, key, value)
+                else:
+                    if getattr(nsc, key, None) is None:
+                        setattr(nsc, key, Namespace())
+                    _update_ns(getattr(nsc, key), value)
+
+        _update_ns(ns, {dest: parsed})
 
 
 @add_attribute("show", True)

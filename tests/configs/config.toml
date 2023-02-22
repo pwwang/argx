@@ -32,6 +32,10 @@ order = 1
 title = "namespace ns"
 
 [[arguments]]
+flags = ["--ns"]
+action = "ns"
+
+[[arguments]]
 flags = ["-b", "--bbb"]
 required = true
 
@@ -40,6 +44,19 @@ flags = ["--ns.a", "--ns.aaa"]
 help = """ns.aaa help
     - newline help newline help newline help newline help newline help newline help [nodefault]
 """
+
+[[namespaces]]
+name = "ns.Subns"
+
+[[arguments]]
+flags = ["--ns.subns"]
+action = "ns"
+dest = "ns.Subns"
+
+[[arguments]]
+flags = ["--ns.subns.x", "--ns.subns.xxx"]
+help = "ns.subns.xxx help"
+dest = "ns.Subns.xxx"
 
 [[commands]]
 name = "cmd1"

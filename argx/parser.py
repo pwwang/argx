@@ -31,6 +31,7 @@ from .action import (
     CountAction,
     ExtendAction,
     ListAction,
+    NamespaceAction,
     HelpAction,
 )
 from .formatter import ChargedHelpFormatter
@@ -94,6 +95,8 @@ class ArgumentParser(APArgumentParser):
         self.register("action", "count", CountAction)
         self.register("action", "extend", ExtendAction)
         self.register("action", "list", ListAction)
+        self.register("action", "ns", NamespaceAction)
+        self.register("action", "namespace", NamespaceAction)
         self.register("action", "help", HelpAction)
         self.register("type", "py", type_.py)
         self.register("type", "json", type_.json)
@@ -291,17 +294,28 @@ class ArgumentParser(APArgumentParser):
 
         Modify to handle namespace actions, like "--group.abc"
         """
-        if "." not in action.dest or isinstance(action, APArgumentGroup):
+        if (
+            isinstance(action, APArgumentGroup)
+            or (
+                not isinstance(action, NamespaceAction)
+                and "." not in action.dest
+            )
+        ):
             if action.required:
                 return self._required_actions._add_action(action)
             return super()._add_action(action)
 
         # Split the destination into a list of keys
         keys = action.dest.split(".")
-        group = None
+        seq = range(len(keys) - 1, 0, -1)
+        # Add --ns, --ns.subns also to their now group
+        if isinstance(action, NamespaceAction):
+            seq = [None] + list(seq)
 
-        for i in range(1, len(keys)):
-            ns_key = ".".join(keys[:-i])
+        group = None
+        for i in seq:
+            ns_key = ".".join(keys[:i])
+
             for action_group in self._action_groups:
                 if (
                     isinstance(action_group, _NamespaceArgumentGroup)
@@ -309,6 +323,7 @@ class ArgumentParser(APArgumentParser):
                 ):
                     group = action_group
                     break
+
             if group is not None:
                 break
 

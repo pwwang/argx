@@ -118,6 +118,21 @@ Foo's options:
     --foo.qux QUX
 ```
 
+You can also add a namespace action argument to take a json that can be parsed as a dict:
+
+```python
+import argx as argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--foo', action="namespace") # or action="ns"
+parser.add_argument('--foo.bar', type=int)
+parser.add_argument('--foo.baz', type=int)
+parser.add_argument('--foo.qux', type=int)
+
+parser.parse_args(['--foo', '{"bar": 1, "baz": 2, "qux": 3}', '--foo.qux', '4'])
+# Namespace(foo=Namespace(bar=1, baz=2, qux=4))
+```
+
 ### Brief help message for massive arguments
 
 If you have a lot of arguments, the help message can be very long. `argx` allows to show only the most important arguments in the help message.

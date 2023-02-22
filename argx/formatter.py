@@ -6,7 +6,7 @@ import re
 from .utils import showable
 
 
-def _wrap_text(text: str, width: int) -> List[str]:
+def _wrap_text(text: str, width: int, indent: str = "") -> List[str]:
     """Wrap text to width and keep the indent"""
     import textwrap
 
@@ -18,7 +18,8 @@ def _wrap_text(text: str, width: int) -> List[str]:
         return textwrap.wrap(
             line,
             width,
-            subsequent_indent=leading_space,
+            initial_indent=indent,
+            subsequent_indent=leading_space + indent,
         )
 
     lines = text.splitlines()
@@ -95,4 +96,4 @@ class ChargedHelpFormatter(HelpFormatter):
         return _wrap_text(text, width)
 
     def _fill_text(self, text: str, width: int, indent: str) -> str:
-        return "\n".join(_wrap_text(text, width))
+        return "\n".join(_wrap_text(text, width, indent))

@@ -10,6 +10,7 @@ from argx.action import (
     CountAction,
     ExtendAction,
     ListAction,
+    NamespaceAction,
 )
 
 
@@ -133,6 +134,32 @@ def test_list():
     parser.add_argument("--bar.v", "-v", action=ListAction)
     ns = parser.parse_args(["-vvv"])
     assert ns.bar.v == ["vv"]
+
+
+def test_namespace():
+    parser = ArgumentParser()
+    parser.add_argument("--foo", action=NamespaceAction)
+    parser.add_argument("--foo.bar", action=StoreAction)
+    parser.add_argument("--foo.ns", action=NamespaceAction)
+
+    ns = parser.parse_args(["--foo.bar", "baz"])
+    assert ns.foo.bar == "baz"
+
+    ns = parser.parse_args(
+        [
+            "--foo",
+            '{"bar": "cux", "d": "e", "ns": {"x": 1} }', "--foo.bar", "eux"
+        ]
+    )
+    assert ns.foo.bar == "eux"
+    assert ns.foo.d == "e"
+    assert ns.foo.ns.x == 1
+
+    with pytest.raises(SystemExit):
+        parser.parse_args(["--foo", "1"])
+
+    with pytest.raises(SystemExit):
+        parser.parse_args(["--foo", "{'a'}"])
 
 
 def test_help():
