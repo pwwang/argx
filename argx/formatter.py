@@ -1,9 +1,31 @@
-from typing import Callable, Iterable, Tuple
+from typing import Callable, Iterable, List, Tuple
 from argparse import SUPPRESS, Action, HelpFormatter, _SubParsersAction
 
 import re
 
 from .utils import showable
+
+
+def _wrap_text(text: str, width: int) -> List[str]:
+    """Wrap text to width and keep the indent"""
+    import textwrap
+
+    def _wrap_line(line: str) -> List[str]:
+        leading_space = line[: len(line) - len(line.lstrip())]
+        rest_text = line[len(leading_space) :]
+        if rest_text.startswith("- "):
+            leading_space += "  "
+        return textwrap.wrap(
+            line,
+            width,
+            subsequent_indent=leading_space,
+        )
+
+    lines = text.splitlines()
+    out = []
+    for line in lines:
+        out.extend(_wrap_line(line))
+    return out
 
 
 class ChargedHelpFormatter(HelpFormatter):
@@ -56,27 +78,21 @@ class ChargedHelpFormatter(HelpFormatter):
                 help = action.help or ""
 
                 if not re.search(r"\[(?:no)?default: ", help):
-                    sep = "\n" if "\n" in help else " "
+                    sep = "\n" if "\n" in help else " " if help else ""
                     action.help = (
                         f"{help}{sep}[default: %(default)s]"
                     )
 
             if (
                 isinstance(action.help, str)
-                and action.help.endswith("[nodefault]")
+                and action.help.rstrip().endswith("[nodefault]")
             ):
-                action.help = action.help[:-11].rstrip()
+                action.help = action.help.rstrip()[:-11].rstrip()
 
             self.add_argument(action)
 
-    def _split_lines(self, text, width):
-        lines = text.splitlines()
-        if len(lines) == 1:
-            return super()._split_lines(text, width)
+    def _split_lines(self, text: str, width: int) -> List[str]:
+        return _wrap_text(text, width)
 
-        import textwrap
-
-        def _wrap_line(line):
-            return textwrap.wrap(line, width, drop_whitespace=False)
-
-        return sum(map(_wrap_line, lines), [])
+    def _fill_text(self, text: str, width: int, indent: str) -> str:
+        return "\n".join(_wrap_text(text, width))

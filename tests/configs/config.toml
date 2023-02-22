@@ -2,6 +2,9 @@ prog = "test"
 # usage = "test usage"
 description = """
 test description {name}
+
+    New line1 description aaaaaaaaaa aaaawfe abc def ghi jkl mno pqr stu vwx yz
+    New line2 description aaaaaaaaaa aaaawfe abc def ghi jkl mno pqr stu vwx yz
 """
 epilog = """
 test epilog
@@ -34,7 +37,9 @@ required = true
 
 [[arguments]]
 flags = ["--ns.a", "--ns.aaa"]
-help = "ns.aaa help\n  - newline help [nodefault]"
+help = """ns.aaa help
+    - newline help newline help newline help newline help newline help newline help [nodefault]
+"""
 
 [[commands]]
 name = "cmd1"
