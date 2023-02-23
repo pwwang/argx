@@ -196,7 +196,7 @@ def test_help_parse(capsys):
     with pytest.raises(SystemExit):
         parser.parse_args(["--help+"])
 
-    assert "'ns'" in capsys.readouterr().out
+    assert "<ns>" in capsys.readouterr().out
 
     parser = ArgumentParser()
     parser.add_namespace("ns", show=False)
@@ -206,4 +206,4 @@ def test_help_parse(capsys):
     with pytest.raises(SystemExit):
         parser.parse_args(["--help"])
 
-    assert "'ns'" in capsys.readouterr().out
+    assert "<ns>" in capsys.readouterr().out

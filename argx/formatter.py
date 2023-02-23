@@ -1,9 +1,14 @@
-from typing import Callable, Iterable, List, Tuple
-from argparse import SUPPRESS, Action, HelpFormatter, _SubParsersAction
+from __future__ import annotations
 
 import re
+import string
+from typing import TYPE_CHECKING, Callable, Iterable, List, Tuple
+from argparse import SUPPRESS, Action, HelpFormatter, _SubParsersAction
 
 from .utils import showable
+
+if TYPE_CHECKING:
+    from argparse import _ArgumentGroup
 
 
 def _wrap_text(text: str, width: int, indent: str = "") -> List[str]:
@@ -41,6 +46,18 @@ class ChargedHelpFormatter(HelpFormatter):
             return self._join_parts(parts)
 
         return super()._format_action(action)
+
+    def _format_usage(
+        self,
+        usage: str | None,
+        actions: Iterable[Action],
+        groups: Iterable[_ArgumentGroup],
+        prefix: str | None,
+    ) -> str:
+        out = super()._format_usage(usage, actions, groups, prefix)
+        len_prefix = len(prefix) if prefix else 5  # "usage:", exclude colon
+        prefix, rest = out[: len_prefix], out[len_prefix :]
+        return f"\033[1m\033[4m{string.capwords(prefix)}\033[0m\033[0m{rest}"
 
     def _metavar_formatter(
         self,

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import string
 from typing import IO, TYPE_CHECKING, Any, Sequence
 from pathlib import Path
 from gettext import gettext as _
@@ -358,7 +359,7 @@ class ArgumentParser(APArgumentParser):
                 raise ValueError(f"Namespace '{name}' already exists")
 
         if title is None:
-            title = f"{_('namespace')} '{name}'"
+            title = f"{_('namespace')} <{name}>"
 
         group = _NamespaceArgumentGroup(self, title, name=name, **kwargs)
         self._action_groups.append(group)
@@ -411,7 +412,11 @@ class ArgumentParser(APArgumentParser):
                     # hide them in usage as well
                     action.help = SUPPRESS
                 continue
-            formatter.start_section(action_group.title)
+            formatter.start_section(
+                "\033[1m\033[4m"
+                f"{string.capwords(action_group.title)}"
+                "\033[0m\033[0m"
+            )
             formatter.add_text(action_group.description)
             formatter.add_arguments(  # type: ignore[call-arg]
                 action_group._group_actions,

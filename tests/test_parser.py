@@ -40,7 +40,7 @@ def test_namespace_options():
     assert parsed.foo.baz.qux is True
 
     help_str = parser.format_help()
-    assert "namespace 'foo'" in help_str
+    assert "Namespace <foo>" in help_str
 
     with pytest.raises(ValueError):
         parser.add_namespace("foo")
@@ -80,10 +80,10 @@ def test_load_from_config():
 
     help_str = parser.format_help()
     assert "test_config" in help_str
-    assert "required arguments" in help_str
+    assert "Required Arguments" in help_str
     assert (
-        help_str.find("required arguments")
-        < help_str.find("option")
+        help_str.find("Required Arguments")
+        < help_str.find("Option")
     )
     # The newlines and spaces kept
     assert "                          - newline help" in help_str
