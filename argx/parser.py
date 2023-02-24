@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-import string
 from typing import IO, TYPE_CHECKING, Any, Sequence
 from pathlib import Path
 from gettext import gettext as _
@@ -17,6 +16,7 @@ from simpleconf import Config
 
 from . import type_
 from .utils import (
+    format_title,
     get_ns_dest,
     import_pyfile,
     add_attribute,
@@ -414,9 +414,10 @@ class ArgumentParser(APArgumentParser):
                     # hide them in usage as well
                     action.help = SUPPRESS
                 continue
+
             formatter.start_section(
                 "\033[1m\033[4m"
-                f"{string.capwords(action_group.title)}"
+                f"{format_title(action_group.title)}"
                 "\033[0m\033[0m"
             )
             formatter.add_text(action_group.description)

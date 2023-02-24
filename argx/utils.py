@@ -87,3 +87,8 @@ def add_attribute(
 def showable(obj: Any) -> bool:
     """Return True if the object is showable"""
     return getattr(obj, "show", True)
+
+
+def format_title(title: str) -> str:
+    """Format a group title"""
+    return ' '.join(map(lambda s: s[0].upper() + s[1:], title.split()))
