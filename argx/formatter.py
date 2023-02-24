@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import re
-import string
 from typing import TYPE_CHECKING, Callable, Iterable, List, Tuple
 from argparse import SUPPRESS, Action, HelpFormatter, _SubParsersAction
+from gettext import gettext as _
 
 from .utils import showable
 
@@ -54,10 +54,15 @@ class ChargedHelpFormatter(HelpFormatter):
         groups: Iterable[_ArgumentGroup],
         prefix: str | None,
     ) -> str:
+        prefix_is_none = prefix is None
         out = super()._format_usage(usage, actions, groups, prefix)
-        len_prefix = len(prefix) if prefix else 5  # "usage:", exclude colon
-        prefix, rest = out[: len_prefix], out[len_prefix :]
-        return f"\033[1m\033[4m{string.capwords(prefix)}\033[0m\033[0m{rest}"
+        len_prefix = len(prefix) if prefix else len(_("usage: ").rstrip(" :"))
+        prefix, rest = out[:len_prefix], out[len_prefix:]
+
+        if prefix_is_none:
+            return f"\033[1m\033[4m{prefix.capitalize()}\033[0m\033[0m{rest}"
+
+        return f"\033[1m{prefix}\033[0m{rest}"
 
     def _metavar_formatter(
         self,
