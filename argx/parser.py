@@ -31,7 +31,8 @@ from .action import (
     AppendConstAction,
     CountAction,
     ExtendAction,
-    ListAction,
+    ClearAppendAction,
+    ClearExtendAction,
     NamespaceAction,
     HelpAction,
 )
@@ -95,7 +96,8 @@ class ArgumentParser(APArgumentParser):
         self.register("action", "append_const", AppendConstAction)
         self.register("action", "count", CountAction)
         self.register("action", "extend", ExtendAction)
-        self.register("action", "list", ListAction)
+        self.register("action", "clear_append", ClearAppendAction)
+        self.register("action", "clear_extend", ClearExtendAction)
         self.register("action", "ns", NamespaceAction)
         self.register("action", "namespace", NamespaceAction)
         self.register("action", "help", HelpAction)

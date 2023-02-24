@@ -120,7 +120,7 @@ class ExtendAction(AppendAction):
         setattr(ns, dest, items)
 
 
-class ListAction(AppendAction):
+class ClearAppendAction(AppendAction):
     """Append a list of values to the list of values for a given option"""
 
     def __init__(self, *args, **kwargs):
@@ -143,6 +143,26 @@ class ListAction(AppendAction):
             items = copy_items(items)
 
         items.append(values)
+        setattr(ns, dest, items)
+
+
+class ClearExtendAction(ClearAppendAction):
+    def __call__(  # type: ignore[override]
+        self,
+        parser: ArgumentParser,
+        namespace: Namespace,
+        values: str | Sequence[Any] | None,
+        option_string: str | None = None,
+    ) -> None:
+        ns, dest = get_ns_dest(namespace, self.dest)
+        if not self.received:
+            items = []
+            self.received = True
+        else:
+            items = getattr(ns, dest, None)
+            items = copy_items(items)
+
+        items.extend(values)
         setattr(ns, dest, items)
 
 

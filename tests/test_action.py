@@ -9,7 +9,8 @@ from argx.action import (
     AppendConstAction,
     CountAction,
     ExtendAction,
-    ListAction,
+    ClearExtendAction,
+    ClearAppendAction,
     NamespaceAction,
 )
 
@@ -99,39 +100,85 @@ def test_extend():
     parser = ArgumentParser()
     parser.add_argument("--foo", nargs="+", action=ExtendAction)
     ns = parser.parse_args(["--foo", "bar", "--foo", "baz", "qux"])
-    assert ns.foo == ['bar', 'baz', 'qux']
+    assert ns.foo == ["bar", "baz", "qux"]
 
     parser.add_argument("--bar.baz", nargs="+", action=ExtendAction)
     ns = parser.parse_args(["--bar.baz", "qux", "--bar.baz", "quux", "quuz"])
-    assert ns.bar.baz == ['qux', 'quux', 'quuz']
+    assert ns.bar.baz == ["qux", "quux", "quuz"]
 
     parser.add_argument("--bar.v", "-v", nargs="+", action=ExtendAction)
     ns = parser.parse_args(["-vvv"])
     assert ns.bar.v == ["vv"]
 
 
-def test_list():
+def test_clear_append():
     parser = ArgumentParser()
-    parser.add_argument("--foo", action=ListAction, default=["a"])
+    parser.add_argument("--foo", action=ClearAppendAction, default=["a"])
     ns = parser.parse_args(["--foo", "bar", "--foo", "baz"])
-    assert ns.foo == ['bar', 'baz']
+    assert ns.foo == ["bar", "baz"]
 
     parser = ArgumentParser()
     parser.add_argument("--foo", action="append", default=["a"])
     ns = parser.parse_args(["--foo", "bar", "--foo", "baz"])
-    assert ns.foo == ['a', 'bar', 'baz']
+    assert ns.foo == ["a", "bar", "baz"]
 
     parser = ArgumentParser()
-    parser.add_argument("--bar.baz", action=ListAction, default=["a"])
+    parser.add_argument("--bar.baz", action=ClearAppendAction, default=["a"])
     ns = parser.parse_args(["--bar.baz", "qux", "--bar.baz", "quux"])
-    assert ns.bar.baz == ['qux', 'quux']
+    assert ns.bar.baz == ["qux", "quux"]
 
     parser = ArgumentParser()
     parser.add_argument("--bar.baz", action="append", default=["a"])
     ns = parser.parse_args(["--bar.baz", "qux", "--bar.baz", "quux"])
-    assert ns.bar.baz == ['a', 'qux', 'quux']
+    assert ns.bar.baz == ["a", "qux", "quux"]
 
-    parser.add_argument("--bar.v", "-v", action=ListAction)
+    parser.add_argument("--bar.v", "-v", action=ClearAppendAction)
+    ns = parser.parse_args(["-vvv"])
+    assert ns.bar.v == ["vv"]
+
+
+def test_clear_extend():
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--foo",
+        nargs="+",
+        action=ClearExtendAction,
+        default=["a"],
+    )
+    ns = parser.parse_args(["--foo", "bar", "--foo", "baz", "qux"])
+    assert ns.foo == ["bar", "baz", "qux"]
+
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--foo",
+        nargs="+",
+        action="extend",
+        default=["a"],
+    )
+    ns = parser.parse_args(["--foo", "bar", "--foo", "baz", "qux"])
+    assert ns.foo == ["a", "bar", "baz", "qux"]
+
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--bar.baz",
+        nargs="+",
+        action=ClearExtendAction,
+        default=["a"],
+    )
+    ns = parser.parse_args(["--bar.baz", "qux", "--bar.baz", "quux", "quuz"])
+    assert ns.bar.baz == ["qux", "quux", "quuz"]
+
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--bar.baz",
+        nargs="+",
+        action="extend",
+        default=["a"],
+    )
+    ns = parser.parse_args(["--bar.baz", "qux", "--bar.baz", "quux", "quuz"])
+    assert ns.bar.baz == ["a", "qux", "quux", "quuz"]
+
+    parser.add_argument("--bar.v", "-v", nargs="+", action=ClearExtendAction)
     ns = parser.parse_args(["-vvv"])
     assert ns.bar.v == ["vv"]
 
@@ -148,7 +195,9 @@ def test_namespace():
     ns = parser.parse_args(
         [
             "--foo",
-            '{"bar": "cux", "d": "e", "ns": {"x": 1} }', "--foo.bar", "eux"
+            '{"bar": "cux", "d": "e", "ns": {"x": 1} }',
+            "--foo.bar",
+            "eux",
         ]
     )
     assert ns.foo.bar == "eux"

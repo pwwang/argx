@@ -19,7 +19,7 @@ pip install -U argx
 - [Default value in argument help](#default-value-in-argument-help): Show the default value in the help message of arguments
 - [Newlines kept in help](#newlines-kept-in-help): Newlines are kept in argument help if any
 - [Defaults from file](#defaults-from-files): Read default values from a configuration file by API or from command line
-- [List action](#list-action): Store a list of values. Different from `append` and `extend`, the initial value is cleared.
+- [Clear-append/extend action](#clear_appendextend-action): Store a list of values. Different from `append` and `extend`, the initial value is cleared.
 - [Grouping required arguments by default](#grouping-required-arguments-by-default): Put required arguments in 'required arguments' group, instead of 'optional arguments' group
 - [Order of groups in help message](#order-of-groups-in-help-message): Allow to add an `order` attribute to groups to change the order of groups in help message
 - [Addtional types](#additional-types): Some additional types to convert the values of arguments
@@ -242,17 +242,17 @@ You can also use `set_defaults_from_configs` method:
 parser.set_defaults_from_configs('config.json')
 ```
 
-### List action
+### Clear_append/extend action
 
-The `list` action is similar to `append` and `extend`, but the initial value is cleared.
+The `clear_append`/`clear_extend` action is similar to `append` and `extend`, but the initial value is cleared.
 
-This is useful when you want to accept a new list of values from the command line, instead of appending to the existing list or default.
+This is useful when you want to accept a new list of values from the command line, instead of append/extend to the existing list or default.
 
 ```python
 import argx as argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--foo', action='list', default=[1, 2, 3], type=int)
+parser.add_argument('--foo', action='clear_append', default=[1, 2, 3], type=int)
 parser.add_argument('--bar', action='append', default=[1, 2, 3], type=int)
 
 args = parser.parse_args('--foo 4 --foo 5 --bar 4 --bar 5'.split())
