@@ -81,12 +81,12 @@ parser.print_help()
 ```
 
 ```shell
-usage: test.py [-h] [--foo.bar BAR] [--foo.baz BAZ] [--foo.qux QUX]
+Usage: test.py [-h] [--foo.bar BAR] [--foo.baz BAZ] [--foo.qux QUX]
 
-optional arguments:
+Optional arguments:
   -h, --help            show this help message and exit
 
-namespace 'foo':
+Namespace <foo>:
   --foo.bar BAR
   --foo.baz BAZ
   --foo.qux QUX
@@ -107,12 +107,12 @@ parser.print_help()
 ```
 
 ```shell
-usage: test.py [-h] [--foo.bar BAR] [--foo.baz BAZ] [--foo.qux QUX]
+Usage: test.py [-h] [--foo.bar BAR] [--foo.baz BAZ] [--foo.qux QUX]
 
-optional arguments:
+Optional Arguments:
   -h, --help            show this help message and exit
 
-Foo's options:
+Foo's Options:
     --foo.bar BAR
     --foo.baz BAZ
     --foo.qux QUX
@@ -148,9 +148,9 @@ parser.parse_args(['--help'])
 ```
 
 ```shell
-usage: test.py [-h] [--foo FOO]
+Usage: test.py [-h] [--foo FOO]
 
-optional arguments:
+Optional Arguments:
   -h, --help, -h+, --help+
                         show help message (with + to show more options) and exit
   --foo FOO
@@ -159,9 +159,9 @@ optional arguments:
 With `parser.parse_args(['--help+'])` you can show the full help message.
 
 ```shell
-usage: test.py [-h] [--foo FOO] [--bar BAR]
+Usage: test.py [-h] [--foo FOO] [--bar BAR]
 
-optional arguments:
+Optional Arguments:
   -h, --help, -h+, --help+
                         show help message (with + to show more options) and exit
   --foo FOO
@@ -185,9 +185,9 @@ parser.print_help()
 ```
 
 ```shell
-usage: test.py [-h] [--foo FOO]
+Usage: test.py [-h] [--foo FOO]
 
-optional arguments:
+Optional Arguments:
   -h, --help            show help message and exit
   --foo FOO             [default: 1]
   --bar BAR             bar [default: two]
@@ -207,9 +207,9 @@ parser.print_help()
 ```
 
 ```shell
-usage: test.py [-h] [--foo FOO]
+Usage: test.py [-h] [--foo FOO]
 
-optional arguments:
+Optional Arguments:
   -h, --help            show this help message and exit
   --foo FOO             foo
                         - bar
@@ -274,12 +274,12 @@ parser.print_help()
 ```
 
 ```shell
-usage: test.py [-h] [--foo FOO] --bar BAR
+Usage: test.py [-h] [--foo FOO] --bar BAR
 
-required arguments:
+Required Arguments:
   --bar BAR
 
-optional arguments:
+Optional Arguments:
   -h, --help            show help message and exit
   --foo FOO
 ```
@@ -301,15 +301,15 @@ parser.print_help()
 ```
 
 ```shell
-usage: test.py [-h] [--bar BAR] [--foo FOO]
+Usage: test.py [-h] [--bar BAR] [--foo FOO]
 
-optional arguments:
+Optional arguments:
   -h, --help            show help message and exit
 
-group2:
+Group2:
   --bar BAR
 
-group1:
+Group1:
   --foo FOO
 ```
 
@@ -365,9 +365,9 @@ parser.print_help()
 ```
 
 ```shell
-usage: myprog [-h] [-a ABC]
+Usage: myprog [-h] [-a ABC]
 
-optional arguments:
+Optional Arguments:
   -h, --help            show help message and exit
   -a ABC, --abc ABC     Optiona a help
 ```
