@@ -87,3 +87,34 @@ def test_load_from_config():
     )
     # The newlines and spaces kept
     assert "                          - newline help" in help_str
+
+
+def test_pre_parse_hook():
+    def pre_parse(parser, args, namespace):
+        parser.add_argument("--bar", required=True)
+        parser.add_argument("--a")
+        parser.add_argument("--b")
+        namespace.c = 3
+        return args + ["--a", "2"]
+
+    parser = ArgumentParser(pre_parse=pre_parse)
+    parsed = parser.parse_args(["--bar", "1"])
+    assert parsed.bar == "1"
+    assert parsed.a == "2"
+    assert parsed.c == 3
+
+
+def test_pre_parse_hook_with_command():
+    def pre_parse(parser, args, namespace):
+        parser.add_argument("--bar", required=True)
+        parser.add_argument("--a")
+        parser.add_argument("--b")
+        namespace.c = 3
+        return args + ["--a", "2"]
+
+    parser = ArgumentParser()
+    parser.add_command("x", pre_parse=pre_parse)
+    parsed = parser.parse_args(["x", "--bar", "1"])
+    assert parsed.bar == "1"
+    assert parsed.a == "2"
+    assert parsed.c == 3

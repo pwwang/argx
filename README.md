@@ -24,6 +24,7 @@ pip install -U argx
 - [Order of groups in help message](#order-of-groups-in-help-message): Allow to add an `order` attribute to groups to change the order of groups in help message
 - [Addtional types](#additional-types): Some additional types to convert the values of arguments
 - [Configuration file to create the parser](#configuration-file-to-create-the-parser): Instead of creating the parser by code, you can also create it by a configuration file
+- [Pre-parse hook](#pre-parse-hook): A hook to modify the arguments before parsing
 - [Backward compatibility](#backward-compatibility): All features are optional. You can use `argx` as a drop-in replacement for `argparse`.
 
 ### Option `exit_on_void`
@@ -371,6 +372,30 @@ Optional Arguments:
   -h, --help            show help message and exit
   -a ABC, --abc ABC     Optiona a help
 ```
+
+### Pre-parse hook
+
+You can add a pre-parse hook to the parser. The hook is called before parsing the arguments. It can be used to modify the arguments before parsing.
+
+```python
+import argx as argparse
+
+def pre_parse(parser, args, namespace):
+    """We can modify the parser (i.e. add arguments)
+    the arguments to be parsed, and even manipulate the namespace.
+    """
+    parser.add_argument('--foo', type=int)
+    parser.add_argument('--bar', type=int)
+    namespace.baz = 2
+    return args + ["--bar", "3"]
+
+parser = argparse.ArgumentParser()
+parser.add_command('command1', pre_parse=pre_parse)
+parsed = parser.parse_args('command1 --foo 1'.split())
+# Namespace(COMMAND='command1', baz=2, foo=1, bar=3)
+```
+
+This is especially useful when you have a lot of subcommands and each has a lot of arguments, when it takes time to add these arguments, for example, some of the values need to be parsed from a file. Using this hook, you can add the arguments only when the subcommand is called, instead of adding them all at the beginning.
 
 ### Backward compatibility
 

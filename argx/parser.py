@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from typing import IO, TYPE_CHECKING, Any, Sequence
+from typing import IO, TYPE_CHECKING, Any, Callable, Sequence
 from pathlib import Path
 from gettext import gettext as _
 from argparse import (
@@ -62,6 +62,7 @@ class ArgumentParser(APArgumentParser):
         allow_abbrev: bool = True,
         exit_on_error: bool = True,
         exit_on_void: bool = False,
+        pre_parse: Callable[[ArgumentParser], None] | None = None,
     ) -> None:
         old_add_help = add_help
         add_help = False
@@ -84,6 +85,7 @@ class ArgumentParser(APArgumentParser):
         super().__init__(**kwargs)
 
         self.exit_on_void = exit_on_void
+        self.prep_parse = pre_parse
         self._subparsers_action = None
 
         # Register our actions to override argparse's or add new ones
@@ -211,6 +213,15 @@ class ArgumentParser(APArgumentParser):
             # make sure that args are mutable
             args = list(args)
 
+        # default Namespace built from parser defaults
+        if namespace is None:
+            namespace = Namespace()
+
+        if callable(self.prep_parse):
+            new_args = self.prep_parse(self, args, namespace)
+            if new_args is not None:
+                args = new_args
+
         if not self.fromfile_prefix_chars:
             new_args = args
         else:
@@ -231,10 +242,6 @@ class ArgumentParser(APArgumentParser):
                         self.set_defaults_from_configs(conf)
                     except Exception as e:
                         self.error(f"Cannot import [{conf}]: {e}")
-
-        # default Namespace built from parser defaults
-        if namespace is None:
-            namespace = Namespace()
 
         # add any action defaults that aren't present
         # Do this mainly for namespace actions, like "--group.abc"
