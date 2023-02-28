@@ -56,13 +56,21 @@ class ChargedHelpFormatter(HelpFormatter):
     ) -> str:
         prefix_is_none = prefix is None
         out = super()._format_usage(usage, actions, groups, prefix)
-        len_prefix = len(prefix) if prefix else len(_("usage: ").rstrip(" :"))
+        len_prefix = (
+            len(_("usage: ").rstrip(" :"))
+            if prefix is None
+            else len(prefix)
+        )
         prefix, rest = out[:len_prefix], out[len_prefix:]
 
         if prefix_is_none:
             return f"\033[1m\033[4m{prefix.capitalize()}\033[0m\033[0m{rest}"
 
-        return f"\033[1m{prefix}\033[0m{rest}"
+        if prefix:  # pragma: no cover
+            # Highlight the prefix if there is one
+            return f"\033[1m{prefix}\033[0m{rest}"
+
+        return out
 
     def _metavar_formatter(
         self,
