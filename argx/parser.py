@@ -34,6 +34,7 @@ from .action import (
     ClearAppendAction,
     ClearExtendAction,
     NamespaceAction,
+    SubParserAction,
     HelpAction,
 )
 from .formatter import ChargedHelpFormatter
@@ -102,6 +103,7 @@ class ArgumentParser(APArgumentParser):
         self.register("action", "clear_extend", ClearExtendAction)
         self.register("action", "ns", NamespaceAction)
         self.register("action", "namespace", NamespaceAction)
+        self.register("action", "parsers", SubParserAction)
         self.register("action", "help", HelpAction)
         self.register("type", "py", type_.py)
         self.register("type", "json", type_.json)
@@ -154,6 +156,9 @@ class ArgumentParser(APArgumentParser):
         if self._subparsers is not self._positionals:
             self._subparsers.order = order
 
+        # Add parent to subparsers action
+        # So that subparsers.add_parser add parent to the sub-parser
+        action.parent = self
         return action
 
     def add_subparser(self, name: str, **kwargs) -> ArgumentParser | Any:

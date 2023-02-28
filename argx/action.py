@@ -9,6 +9,7 @@ from argparse import (
     _AppendAction,
     _AppendConstAction,
     _CountAction,
+    _SubParsersAction,
     # Introduced in python3.9
     # _ExtendAction,
 )
@@ -197,6 +198,14 @@ class NamespaceAction(_StoreAction):
                     _update_ns(getattr(nsc, key), value)
 
         _update_ns(ns, {dest: parsed})
+
+
+class SubParserAction(_SubParsersAction):
+
+    def add_parser(self, *args, **kwargs) -> ArgumentParser:
+        parser = super().add_parser(*args, **kwargs)
+        parser.parent = self.parent
+        return parser
 
 
 @add_attribute("show", True)
