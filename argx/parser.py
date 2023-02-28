@@ -85,7 +85,7 @@ class ArgumentParser(APArgumentParser):
         super().__init__(**kwargs)
 
         self.exit_on_void = exit_on_void
-        self.prep_parse = pre_parse
+        self.pre_parse = pre_parse
         self._subparsers_action = None
 
         # Register our actions to override argparse's or add new ones
@@ -217,8 +217,8 @@ class ArgumentParser(APArgumentParser):
         if namespace is None:
             namespace = Namespace()
 
-        if callable(self.prep_parse):
-            new_args = self.prep_parse(self, args, namespace)
+        if callable(self.pre_parse):
+            new_args = self.pre_parse(self, args, namespace)
             if new_args is not None:
                 args = new_args
 
