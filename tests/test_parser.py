@@ -89,6 +89,17 @@ def test_load_from_config():
     assert "                          - newline help" in help_str
 
 
+def test_parse_known_args_parse_file_false():
+    parser = ArgumentParser(fromfile_prefix_chars="@")
+    parser.add_argument("-a", type=int)
+    parsed, argv = parser.parse_known_args(
+        ["@file.toml", "-a", "2"],
+        parse_file=False,
+    )
+    assert parsed.a == 2
+    assert argv == ["@file.toml"]
+
+
 def test_pre_parse_hook():
     def pre_parse(parser, args, namespace):
         parser.add_argument("--bar", required=True)

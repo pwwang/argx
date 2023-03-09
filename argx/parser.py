@@ -206,6 +206,7 @@ class ArgumentParser(APArgumentParser):
         self,
         args: Sequence[str] | None = None,
         namespace: Namespace | None = None,
+        parse_file: bool = True,
     ) -> tuple[Namespace, list[str]]:
         """Parse known arguments.
 
@@ -227,12 +228,16 @@ class ArgumentParser(APArgumentParser):
             if new_args is not None:
                 args = new_args
 
+        files = []
         if not self.fromfile_prefix_chars:
             new_args = args
         else:
             # Setup the defaults if a configuration file is given by @config.ini
             new_args = []
             for arg in args:
+                if arg[0] in self.fromfile_prefix_chars and not parse_file:
+                    files.append(arg)
+                    continue
                 if (
                     not arg
                     or arg[0] not in self.fromfile_prefix_chars
@@ -260,6 +265,7 @@ class ArgumentParser(APArgumentParser):
                 setattr(ns, last_key, action.default)
 
         parsed_args, argv = super().parse_known_args(new_args, namespace)
+        argv = files + argv
         if not argv and not args and self.exit_on_void:
             self.error("No arguments provided")
 
