@@ -94,10 +94,24 @@ def test_parse_known_args_parse_file_false():
     parser.add_argument("-a", type=int)
     parsed, argv = parser.parse_known_args(
         ["@file.toml", "-a", "2"],
-        parse_file=False,
+        fromfile_parse=False,
+        fromfile_keep=True,
     )
     assert parsed.a == 2
     assert argv == ["@file.toml"]
+
+
+def test_parse_known_args_with_txt():
+    argsfile = Path(__file__).parent / "configs" / "args.txt"
+    parser = ArgumentParser(fromfile_prefix_chars="@")
+    parser.add_argument("-a", type=int)
+    parsed, argv = parser.parse_known_args(
+        [f"@{argsfile}", "-a", "2"],
+        fromfile_parse=False,
+        fromfile_keep=True,
+    )
+    assert parsed.a == 2
+    assert argv == ["-b", "3"]
 
 
 def test_pre_parse_hook():

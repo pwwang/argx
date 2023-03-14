@@ -206,11 +206,21 @@ class ArgumentParser(APArgumentParser):
         self,
         args: Sequence[str] | None = None,
         namespace: Namespace | None = None,
-        parse_file: bool = True,
+        fromfile_parse: bool = True,
+        fromfile_keep: bool = False,
     ) -> tuple[Namespace, list[str]]:
         """Parse known arguments.
 
         Modify to handle exit_on_void and @file to load default values.
+
+        Args:
+            args: The arguments to parse.
+            namespace: The namespace to use.
+            fromfile_parse: Whether to parse @file.
+            fromfile_keep: Whether to keep @file in the unknown arguments.
+                Note that @file.txt file will be treated as a normal argument,
+                thus, it will be parsed and not kept anyway. This means at
+                this point, @file.txt will be expanded right away.
         """
         if args is None:  # pragma: no cover
             # args default to the system args
@@ -228,30 +238,43 @@ class ArgumentParser(APArgumentParser):
             if new_args is not None:
                 args = new_args
 
+        # @files to keep in the unknown arguments
         files = []
-        if not self.fromfile_prefix_chars:
-            new_args = args
-        else:
-            # Setup the defaults if a configuration file is given by @config.ini
-            new_args = []
-            for arg in args:
-                if arg[0] in self.fromfile_prefix_chars and not parse_file:
+        # arguments passed to super().parse_known_args() for parsing
+        new_args = []
+
+        for arg in args:
+            # no fromfile_prefix_chars or normal argument
+            if (
+                not self.fromfile_prefix_chars
+                or not arg
+                or arg[0] not in self.fromfile_prefix_chars
+            ):
+                new_args.append(arg)
+
+            # fromfile_prefix_chars is set
+            # and arg is not empty
+            # and arg starts with fromfile_prefix_chars
+
+            # @file.txt is special, send it to super().parse_known_args()
+            # for parsing
+            elif arg.endswith(".txt"):
+                new_args.append(arg)
+            # @file.py, @file.json, ...
+            else:
+                if fromfile_keep:
+                    # keep @file in the unknown arguments
                     files.append(arg)
-                    continue
-                if (
-                    not arg
-                    or arg[0] not in self.fromfile_prefix_chars
-                    or arg.endswith(".txt")
-                ):
-                    new_args.append(arg)
-                else:
-                    try:
-                        conf = arg[1:]
-                        if conf.endswith(".py"):
+
+                if fromfile_parse:
+                    # parse @file to set the default values
+                    conf = arg[1:]
+                    if conf.endswith(".py"):
+                        try:
                             conf = import_pyfile(conf)
-                        self.set_defaults_from_configs(conf)
-                    except Exception as e:
-                        self.error(f"Cannot import [{conf}]: {e}")
+                        except Exception as e:
+                            self.error(f"Cannot import [{conf}]: {e}")
+                    self.set_defaults_from_configs(conf)
 
         # add any action defaults that aren't present
         # Do this mainly for namespace actions, like "--group.abc"
