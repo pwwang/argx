@@ -544,10 +544,14 @@ class ArgumentParser(APArgumentParser):
             import builtins
 
             # "int", "float", "str", "open", etc
-            return self._registries[registry_name].get(
+            got = self._registries[registry_name].get(
                 value,
                 getattr(builtins, value, None),
             )
+            if not callable(got):
+                raise ValueError(f"Invalid type '{value}'")
+
+            return got
 
         # Not using super() because _ArgumentGroup can also use it
         return APArgumentGroup._registry_get(

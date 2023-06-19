@@ -33,3 +33,9 @@ def test_auto():
 
     ns = parser.parse_args(["--foo", 'xy'])
     assert ns.foo == 'xy'
+
+
+def test_unsupported_type():
+    parser = ArgumentParser()
+    with pytest.raises(ValueError, match="Invalid type"):
+        parser.add_argument("--foo", type="unsupported")
