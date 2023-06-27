@@ -90,14 +90,14 @@ toml = ["tomli"]
 
 [[package]]
 name = "diot"
-version = "0.1.8"
+version = "0.2.1"
 description = "Python dictionary with dot notation."
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "diot-0.1.8-py3-none-any.whl", hash = "sha256:f2d7d2f121e8a60cd06b7d1b476765e25c37002d0db44e0f5ef72dca98d22640"},
-    {file = "diot-0.1.8.tar.gz", hash = "sha256:21408f8a09628bfb8c88791eaab1558a71692adff4e237c96b4b31a54d3cb2f5"},
+    {file = "diot-0.2.1-py3-none-any.whl", hash = "sha256:d37bf5df36a257386e4836ab33f393f7ee945f262587b8c5b88ad86e1d3eb261"},
+    {file = "diot-0.2.1.tar.gz", hash = "sha256:e8767e712f29886d7dcff1866a383a2ed9eeb9699ae58486ec58f3e6247afa06"},
 ]
 
 [package.dependencies]
@@ -177,14 +177,14 @@ files = [
 
 [[package]]
 name = "pluggy"
-version = "1.0.0"
+version = "1.2.0"
 description = "plugin and hook calling mechanisms for python"
 category = "dev"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "pluggy-1.0.0-py2.py3-none-any.whl", hash = "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"},
-    {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
+    {file = "pluggy-1.2.0-py3-none-any.whl", hash = "sha256:c2fd55a7d7a3863cba1a013e4e2414658b1d07b6bc57b3919e0c63c9abb99849"},
+    {file = "pluggy-1.2.0.tar.gz", hash = "sha256:d12f0c4b579b15f5e054301bb226ee85eeeba08ffec228092f8defbaa3a4c4b3"},
 ]
 
 [package.dependencies]
@@ -196,14 +196,14 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "pytest"
-version = "7.3.2"
+version = "7.4.0"
 description = "pytest: simple powerful testing with Python"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pytest-7.3.2-py3-none-any.whl", hash = "sha256:cdcbd012c9312258922f8cd3f1b62a6580fdced17db6014896053d47cddf9295"},
-    {file = "pytest-7.3.2.tar.gz", hash = "sha256:ee990a3cc55ba808b80795a79944756f315c67c12b56abd3ac993a7b8c17030b"},
+    {file = "pytest-7.4.0-py3-none-any.whl", hash = "sha256:78bf16451a2eb8c7a2ea98e32dc119fd2aa758f1d5d66dbf0a59d69a3969df32"},
+    {file = "pytest-7.4.0.tar.gz", hash = "sha256:b4bf8c45bd59934ed84001ad51e11b4ee40d40a1229d2c79f9c592b0a3f6bd8a"},
 ]
 
 [package.dependencies]
@@ -239,25 +239,26 @@ testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtuale
 
 [[package]]
 name = "python-simpleconf"
-version = "0.5.7"
+version = "0.6.0"
 description = "Simple configuration management with python."
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "python-simpleconf-0.5.7.tar.gz", hash = "sha256:e8c41be99cc835d59efe6a0d1617cffcfa6c7661142c5299d7ae39ecc06b3f14"},
-    {file = "python_simpleconf-0.5.7-py3-none-any.whl", hash = "sha256:e44f2ef56ee931607f2e6a836e5a3b77457abea8dc0e536e8ba8403751f07b2c"},
+    {file = "python_simpleconf-0.6.0-py3-none-any.whl", hash = "sha256:40e73fbd60d84ff45d22fcd8f7e2ade5fcca65559f8d9865e7750d8bcfadd209"},
+    {file = "python_simpleconf-0.6.0.tar.gz", hash = "sha256:06c29e0c08e22a41024028c46cd845bdfe3cbba402730fa65fb007fa89315801"},
 ]
 
 [package.dependencies]
-diot = ">=0.1,<0.2"
-rtoml = {version = ">=0.8,<0.9", optional = true, markers = "extra == \"toml\" or extra == \"all\""}
+diot = ">=0.2.1,<0.3.0"
+rtoml = {version = ">=0.8,<0.9", optional = true, markers = "python_version < \"3.11\" and sys_platform == \"linux\" and extra == \"toml\" or python_version < \"3.11\" and sys_platform == \"linux\" and extra == \"all\""}
+tomli = {version = ">=2.0,<3.0", optional = true, markers = "sys_platform != \"linux\" and python_version < \"3.11\" and extra == \"toml\" or sys_platform != \"linux\" and python_version < \"3.11\" and extra == \"all\""}
 
 [package.extras]
-all = ["iniconfig (>=1.1,<2.0)", "python-dotenv (>=0.20,<0.21)", "pyyaml (>=6,<7)", "rtoml (>=0.8,<0.9)"]
-env = ["python-dotenv (>=0.20,<0.21)"]
-ini = ["iniconfig (>=1.1,<2.0)"]
-toml = ["rtoml (>=0.8,<0.9)"]
+all = ["iniconfig (>=2.0,<3.0)", "python-dotenv (>=0.21,<0.22)", "pyyaml (>=6,<7)", "rtoml (>=0.8,<0.9)", "tomli (>=2.0,<3.0)"]
+env = ["python-dotenv (>=0.21,<0.22)"]
+ini = ["iniconfig (>=2.0,<3.0)"]
+toml = ["rtoml (>=0.8,<0.9)", "tomli (>=2.0,<3.0)"]
 yaml = ["pyyaml (>=6,<7)"]
 
 [[package]]
@@ -349,4 +350,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7"
-content-hash = "45f1daa3cd342d5ca8904aa6490d9a1a43303f578828403c23ab7a13deebe4ac"
+content-hash = "5f0ace147badf8e0ce9522c0bf8ccb30f016e9b093687bbbf486988e5e247449"
