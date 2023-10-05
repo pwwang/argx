@@ -349,6 +349,8 @@ class ArgumentParser(APArgumentParser):
                 return self._required_actions._add_action(action)
             return super()._add_action(action)
 
+        # Do not transform the keys for namespace action
+        action.dest = action.option_strings[0].lstrip(self.prefix_chars)
         # Split the destination into a list of keys
         keys = action.dest.split(".")
         seq = range(len(keys) - 1, 0, -1)

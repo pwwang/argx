@@ -50,11 +50,13 @@ def test_load_defaults_from_file():
     defaultsfile = Path(__file__).parent / "configs" / "defaults.toml"
     parser = ArgumentParser(fromfile_prefix_chars="@")
     parser.add_argument("-a", required=True, type=int)
+    parser.add_argument("--ns.a-b", default=4, type=int)
     command = parser.add_command("status")
     command.add_argument("--branch")
     parsed = parser.parse_args([f"@{defaultsfile}", "status"])
     assert parsed.a == 1
     assert parsed.branch == "dev"
+    assert getattr(parsed.ns, 'a-b') == 4
 
     defaultspy = Path(__file__).parent / "configs" / "defaults.py"
     parser = ArgumentParser(fromfile_prefix_chars="@")
