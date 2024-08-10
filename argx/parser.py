@@ -291,12 +291,12 @@ class ArgumentParser(APArgumentParser):
 
                 if fromfile_parse:
                     # parse @file to set the default values
-                    conf_file = arg[1:]
-                    if conf_file.endswith(".py"):
+                    conf = arg[1:]
+                    if conf.endswith(".py"):
                         try:
-                            conf = import_pyfile(conf_file)
+                            conf: dict | str = import_pyfile(conf)
                         except Exception as e:
-                            self.error(f"Cannot import [{conf_file}]: {e}")
+                            self.error(f"Cannot import [{conf}]: {e}")
                     self.set_defaults_from_configs(conf)
 
         # add any action defaults that aren't present
