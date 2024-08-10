@@ -14,8 +14,14 @@ python = "^3.7"
 python-simpleconf = "^0.6"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7"
-pytest-cov = "^4"
+pytest = [
+    { version = "^7", python = ">=3.7,<3.8" },
+    { version = "^8", python = "^3.8" },
+]
+pytest-cov = [
+    { version = "^4", python = ">=3.7,<3.8" },
+    { version = "^5", python = "^3.8" },
+]
 python-simpleconf = {version = "^0.6", extras = ["toml"]}
 
 [build-system]
@@ -38,6 +44,6 @@ console_output_style = "progress"
 junit_family = "xunit1"
 
 [tool.black]
-line-length = 79
-target-version = ['py37', 'py38', 'py39', 'py310']
+line-length = 88
+target-version = ['py37', 'py38', 'py39', 'py310', 'py311', 'py312']
 include = '\.pyi?$'
