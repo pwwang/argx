@@ -178,10 +178,11 @@ class NamespaceAction(_StoreAction):
         option_string: str | None = None,
     ) -> None:
         ns, dest = get_ns_dest(namespace, self.dest)
-        try:
-            parsed = json.loads(values)
-        except json.JSONDecodeError:
-            parser.error(f"Invalid json for {option_string}: {values}")
+        if isinstance(values, str):
+            try:
+                parsed = json.loads(values)
+            except json.JSONDecodeError:
+                parser.error(f"Invalid json for {option_string}: {values}")
 
         if not isinstance(parsed, dict):
             parser.error(

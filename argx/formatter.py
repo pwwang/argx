@@ -8,7 +8,7 @@ from gettext import gettext as _
 from .utils import showable
 
 if TYPE_CHECKING:
-    from argparse import _ArgumentGroup
+    from argparse import _MutuallyExclusiveGroup
 
 
 def _wrap_text(text: str, width: int, indent: str = "") -> List[str]:
@@ -51,7 +51,7 @@ class ChargedHelpFormatter(HelpFormatter):
         self,
         usage: str | None,
         actions: Iterable[Action],
-        groups: Iterable[_ArgumentGroup],
+        groups: Iterable[_MutuallyExclusiveGroup],
         prefix: str | None,
     ) -> str:
         prefix_is_none = prefix is None

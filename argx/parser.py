@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from typing import IO, TYPE_CHECKING, Any, Callable, Sequence
+from typing import IO, TYPE_CHECKING, Any, Callable, Iterable, Sequence
 from pathlib import Path
 from gettext import gettext as _
 from argparse import (
@@ -45,7 +45,8 @@ if TYPE_CHECKING:
 
 @add_attribute("level", 0)
 class ArgumentParser(APArgumentParser):
-    """Class to handle command line arguments and configuration files"""
+    """Supercharged ArgumentParser for parsing command line strings into
+    Python objects."""
 
     def __init__(
         self,
@@ -63,8 +64,33 @@ class ArgumentParser(APArgumentParser):
         allow_abbrev: bool = True,
         exit_on_error: bool = True,
         exit_on_void: bool = False,
-        pre_parse: Callable[[ArgumentParser], None] | None = None,
+        pre_parse: (
+            Callable[[ArgumentParser, Sequence[str], Namespace], None] | None
+        ) = None,
     ) -> None:
+        """Create an ArgumentParser
+
+        Args:
+            prog (str, optional): The program name
+            usage (str, optional): The usage message
+            description (str, optional): The description message
+            epilog (str, optional): The epilog message
+            parents (Sequence[ArgumentParser], optional): The parent parsers
+            formatter_class (type, optional): The formatter class
+            prefix_chars (str, optional): The prefix characters
+            fromfile_prefix_chars (str, optional): The prefix characters for
+                configuration files
+            argument_default (Any, optional): The default value for arguments
+            conflict_handler (str, optional): The conflict handler
+            add_help (bool | str, optional): Whether to add the help option
+            allow_abbrev (bool, optional): Whether to allow abbreviation
+            exit_on_error (bool, optional): Whether to exit on error
+            exit_on_void (bool, optional): Whether to exit on void arguments
+                Added by `argx`.
+            pre_parse (Callable[[ArgumentParser], None], optional): The
+                function to call before parsing.
+                Added by `argx`.
+        """
         old_add_help = add_help
         add_help = False
         kwargs = {
@@ -87,7 +113,7 @@ class ArgumentParser(APArgumentParser):
 
         self.exit_on_void = exit_on_void
         self.pre_parse = pre_parse
-        self._subparsers_action = None
+        self._subparsers_action: _SubParsersAction | None = None
 
         # Register our actions to override argparse's or add new ones
         self.register("action", None, StoreAction)
@@ -111,9 +137,7 @@ class ArgumentParser(APArgumentParser):
         self.register("type", "auto", type_.auto)
 
         # Add help option to support + for more options
-        default_prefix = (
-            "-" if "-" in self.prefix_chars else self.prefix_chars[0]
-        )
+        default_prefix = "-" if "-" in self.prefix_chars else self.prefix_chars[0]
         if old_add_help is True:
             self.add_argument(
                 f"{default_prefix}h",
@@ -130,9 +154,7 @@ class ArgumentParser(APArgumentParser):
                 f"{default_prefix * 2}help+",
                 action="help",
                 default=SUPPRESS,
-                help=_(
-                    "show help message (with + to show more options) and exit"
-                ),
+                help=_("show help message (with + to show more options) and exit"),
             )
         # restore add_help
         self.add_help = old_add_help  # type: ignore[assignment]
@@ -142,11 +164,12 @@ class ArgumentParser(APArgumentParser):
             order=-1,
         )
 
-    def add_subparsers(self, order: int = 99, **kwargs):
+    def add_subparsers(self, order: int = 99, **kwargs) -> _SubParsersAction:
         """Add subparsers to the parser.
 
         Args:
             order (int): The order of the subparsers group
+                Added by `argx`.
             **kwargs: The arguments to pass to add_argument_group()
 
         Returns:
@@ -162,7 +185,7 @@ class ArgumentParser(APArgumentParser):
         return action
 
     def add_subparser(self, name: str, **kwargs) -> ArgumentParser | Any:
-        """Add a subparser directly.
+        """Add a subparser directly, a shortcut to add sub-commands by `argx`.
 
         Instead of
         >>> subparsers = parser.add_subparsers(...)
@@ -191,18 +214,16 @@ class ArgumentParser(APArgumentParser):
             self._subparsers_action = self.add_subparsers(
                 title=_("subcommands"),
                 required=True,
-                dest="COMMAND"
-                if self.level == 0
-                else f"COMMAND{self.level+1}",
+                dest="COMMAND" if self.level == 0 else f"COMMAND{self.level + 1}",
             )
         kwargs.setdefault("help", f"The {name} command")
-        return self._subparsers_action.add_parser(
-            name, level=self.level + 1, **kwargs
-        )
+        out = self._subparsers_action.add_parser(name, **kwargs)
+        out.level = self.level + 1
+        return out
 
     add_command = add_subparser
 
-    def parse_known_args(
+    def parse_known_args(  # type: ignore[override]
         self,
         args: Sequence[str] | None = None,
         namespace: Namespace | None = None,
@@ -211,16 +232,18 @@ class ArgumentParser(APArgumentParser):
     ) -> tuple[Namespace, list[str]]:
         """Parse known arguments.
 
-        Modify to handle exit_on_void and @file to load default values.
+        Modify to handle exit_on_void and @file to load default values by `argx`.
 
         Args:
             args: The arguments to parse.
             namespace: The namespace to use.
             fromfile_parse: Whether to parse @file.
+                Added by `argx`.
             fromfile_keep: Whether to keep @file in the unknown arguments.
                 Note that @file.txt file will be treated as a normal argument,
                 thus, it will be parsed and not kept anyway. This means at
                 this point, @file.txt will be expanded right away.
+                Added by `argx`.
         """
         if args is None:  # pragma: no cover
             # args default to the system args
@@ -268,12 +291,12 @@ class ArgumentParser(APArgumentParser):
 
                 if fromfile_parse:
                     # parse @file to set the default values
-                    conf = arg[1:]
-                    if conf.endswith(".py"):
+                    conf_file = arg[1:]
+                    if conf_file.endswith(".py"):
                         try:
-                            conf = import_pyfile(conf)
+                            conf = import_pyfile(conf_file)
                         except Exception as e:
-                            self.error(f"Cannot import [{conf}]: {e}")
+                            self.error(f"Cannot import [{conf_file}]: {e}")
                     self.set_defaults_from_configs(conf)
 
         # add any action defaults that aren't present
@@ -338,12 +361,8 @@ class ArgumentParser(APArgumentParser):
 
         Modify to handle namespace actions, like "--group.abc"
         """
-        if (
-            isinstance(action, APArgumentGroup)
-            or (
-                not isinstance(action, NamespaceAction)
-                and "." not in action.dest
-            )
+        if isinstance(action, APArgumentGroup) or (
+            not isinstance(action, NamespaceAction) and "." not in action.dest
         ):
             if action.required:
                 return self._required_actions._add_action(action)
@@ -353,7 +372,7 @@ class ArgumentParser(APArgumentParser):
         action.dest = action.option_strings[0].lstrip(self.prefix_chars)
         # Split the destination into a list of keys
         keys = action.dest.split(".")
-        seq = range(len(keys) - 1, 0, -1)
+        seq: Iterable[int] = range(len(keys) - 1, 0, -1)
         # Add --ns, --ns.subns also to their now group
         if isinstance(action, NamespaceAction):
             seq = [None] + list(seq)
@@ -406,7 +425,8 @@ class ArgumentParser(APArgumentParser):
         if title is None:
             title = f"{_('namespace')} <{name}>"
 
-        group = _NamespaceArgumentGroup(self, title, name=name, **kwargs)
+        group = _NamespaceArgumentGroup(self, title, **kwargs)
+        group.name = name
         self._action_groups.append(group)
         return group
 
@@ -441,9 +461,7 @@ class ArgumentParser(APArgumentParser):
         formatter = self._get_formatter()
 
         # usage
-        formatter.add_usage(
-            self.usage, self._actions, self._mutually_exclusive_groups
-        )
+        formatter.add_usage(self.usage, self._actions, self._mutually_exclusive_groups)
 
         # description
         formatter.add_text(self.description)
@@ -459,9 +477,7 @@ class ArgumentParser(APArgumentParser):
                 continue
 
             formatter.start_section(
-                "\033[1m\033[4m"
-                f"{format_title(action_group.title)}"
-                "\033[0m\033[0m"
+                "\033[1m\033[4m" f"{format_title(action_group.title)}" "\033[0m\033[0m"
             )
             formatter.add_text(action_group.description)
             formatter.add_arguments(  # type: ignore[call-arg]
@@ -538,11 +554,7 @@ class ArgumentParser(APArgumentParser):
         default: Any = None,
     ) -> Any:
         # Allow type to be string
-        if (
-            registry_name == "type"
-            and isinstance(value, str)
-            and default == value
-        ):
+        if registry_name == "type" and isinstance(value, str) and default == value:
             import builtins
 
             # "int", "float", "str", "open", etc
@@ -565,7 +577,9 @@ class ArgumentParser(APArgumentParser):
 
     @classmethod
     def from_configs(cls, *configs: dict | str, **kwargs) -> ArgumentParser:
-        """Create an ArgumentParser from a configuration file
+        """Create an ArgumentParser from a configuration file.
+
+        Added by `argx`.
 
         Args:
             *configs: The configuration files or dicts to load

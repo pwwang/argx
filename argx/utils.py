@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any, Callable, Type, TypeVar
 from argparse import Namespace
-from typing import TYPE_CHECKING, Any, Callable, Type
 
 if TYPE_CHECKING:
     from os import PathLike
+
+T = TypeVar("T", bound=Type)
 
 
 def import_pyfile(pyfile: PathLike | str) -> dict:
@@ -57,7 +59,7 @@ def add_attribute(
     default: Any = None,
     attr2: str | None = None,
     default2: Any = None,
-) -> Callable[[Type], Type]:
+) -> Callable[[T], T]:
     """Add an attribute to a class, working as a decorator
 
     Args:
@@ -65,9 +67,12 @@ def add_attribute(
         default: The default value
         attr2: The second attribute name
         default2: The second default value
+
+    Returns:
+        The decorator function
     """
 
-    def deco(cls):
+    def deco(cls: T) -> T:
         old_init = cls.__init__
 
         def new_init(self, *args, **kwargs):
@@ -76,7 +81,7 @@ def add_attribute(
             if attr2 is not None:
                 value2 = kwargs.pop(attr2, default2)
                 setattr(self, attr2, value2)
-            old_init(self, *args, **kwargs)
+            return old_init(self, *args, **kwargs)
 
         cls.__init__ = new_init
         return cls
