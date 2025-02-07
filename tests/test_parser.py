@@ -145,3 +145,10 @@ def test_pre_parse_hook_with_command():
     assert parsed.bar == "1"
     assert parsed.a == "2"
     assert parsed.c == 3
+
+
+def test_different_help_option():
+    parser = ArgumentParser(add_help="help")
+    parser.add_argument("-h", required=True)
+    parsed = parser.parse_args(["-h", "1"])
+    assert parsed.h == "1"
