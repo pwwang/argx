@@ -60,7 +60,7 @@ class ArgumentParser(APArgumentParser):
         fromfile_prefix_chars: str | None = None,
         argument_default: Any = None,
         conflict_handler: str = "error",
-        add_help: bool | str = True,
+        add_help: bool | str | Sequence[str] = True,
         allow_abbrev: bool = True,
         exit_on_error: bool = True,
         exit_on_void: bool = False,
@@ -82,10 +82,11 @@ class ArgumentParser(APArgumentParser):
                 configuration files
             argument_default (Any, optional): The default value for arguments
             conflict_handler (str, optional): The conflict handler
-            add_help (bool | str, optional): Whether to add the help option
-                If True (default), same as "h,help"
+            add_help (bool | str | Sequence[str], optional): Whether to
+                add the help option.
+                If True (default), same as "h,help".
                 If any option ends with "+", it will add the help option with the
-                ability to show more options (e.g. "h+,help+")
+                ability to show more options (e.g. "h+,help+").
                 If False, it will not add the help option
             allow_abbrev (bool, optional): Whether to allow abbreviation
             exit_on_error (bool, optional): Whether to exit on error
@@ -147,15 +148,20 @@ class ArgumentParser(APArgumentParser):
             if old_add_help is True:
                 old_add_help = "h,help"
 
-            old_add_help = old_add_help.replace(" ", "")
-            if len(old_add_help.rstrip("+")) > 1:
-                default_prefix = default_prefix * 2
+            if isinstance(old_add_help, str):
+                old_add_help = old_add_help.split(",")
 
-            old_add_help = [f"{default_prefix}{x}" for x in old_add_help.split(",")]
-
+            old_add_help = [x.strip() for x in old_add_help]
             help_msg = "show this help message and exit"
             if any(x.endswith("+") for x in old_add_help):
                 help_msg = f"{help_msg} (with + for more options)"
+
+            old_add_help = [
+                f"{default_prefix * 2}{x}"
+                if len(x.rstrip("+")) > 1
+                else f"{default_prefix}{x}"
+                for x in old_add_help
+            ]
 
             self.add_argument(
                 *old_add_help,
