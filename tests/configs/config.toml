@@ -11,7 +11,7 @@ test epilog
 """
 prefix_chars = "-"
 fromfile_prefix_chars = "@"
-add_help = "+"
+add_help = "h,help,h+,help+"
 exit_on_error = true
 exit_on_void = true
 allow_abbrev = true

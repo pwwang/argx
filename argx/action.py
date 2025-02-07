@@ -170,6 +170,7 @@ class ClearExtendAction(ClearAppendAction):
 @add_attribute("show", True)
 class NamespaceAction(_StoreAction):
     """Receive a json and parse and spread it to the namespace"""
+
     def __call__(  # type: ignore[override]
         self,
         parser: ArgumentParser,
@@ -185,9 +186,7 @@ class NamespaceAction(_StoreAction):
                 parser.error(f"Invalid json for {option_string}: {values}")
 
         if not isinstance(parsed, dict):
-            parser.error(
-                f"Invalid json dictionary for {option_string}: {values}"
-            )
+            parser.error(f"Invalid json dictionary for {option_string}: {values}")
 
         def _update_ns(nsc: Namespace, dct: dict[str, Any]) -> None:
             for key, value in dct.items():
@@ -219,9 +218,9 @@ class HelpAction(_HelpAction):
         option_string: str | None = None,
     ) -> None:
         parser.print_help(
-            plus=(
-                (parser.add_help == "+" and "+" in option_string)
-                or parser.add_help is True
-            )
+            # This is a + option
+            plus=option_string.endswith("+")
+            # Or no + option defined at all, all options are shown
+            or not any(h.endswith("+") for h in parser.add_help)
         )
         parser.exit()

@@ -142,7 +142,7 @@ If you have a lot of arguments, the help message can be very long. `argx` allows
 import argx as argparse
 
 # Advanced help options to show the brief help message or the full help message
-parser = argparse.ArgumentParser(add_help='+')
+parser = argparse.ArgumentParser(add_help='h,help,h+,help+')
 parser.add_argument('--foo', type=int)
 parser.add_argument('--bar', type=int, show=False)
 parser.parse_args(['--help'])

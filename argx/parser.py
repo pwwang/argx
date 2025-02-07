@@ -83,6 +83,10 @@ class ArgumentParser(APArgumentParser):
             argument_default (Any, optional): The default value for arguments
             conflict_handler (str, optional): The conflict handler
             add_help (bool | str, optional): Whether to add the help option
+                If True (default), same as "h,help"
+                If any option ends with "+", it will add the help option with the
+                ability to show more options (e.g. "h+,help+")
+                If False, it will not add the help option
             allow_abbrev (bool, optional): Whether to allow abbreviation
             exit_on_error (bool, optional): Whether to exit on error
             exit_on_void (bool, optional): Whether to exit on void arguments
@@ -92,6 +96,7 @@ class ArgumentParser(APArgumentParser):
                 Added by `argx`.
         """
         old_add_help = add_help
+        # disable add_help to add it later
         add_help = False
         kwargs = {
             "prog": prog,
@@ -138,24 +143,27 @@ class ArgumentParser(APArgumentParser):
 
         # Add help option to support + for more options
         default_prefix = "-" if "-" in self.prefix_chars else self.prefix_chars[0]
-        if old_add_help is True:
+        if old_add_help is not False:
+            if old_add_help is True:
+                old_add_help = "h,help"
+
+            old_add_help = old_add_help.replace(" ", "")
+            old_add_help = [
+                f"{default_prefix * (1 if len(x.rstrip("+")) == 1 else 2)}{x}"
+                for x in old_add_help.split(",")
+            ]
+
+            help_msg = "show this help message and exit"
+            if any(x.endswith("+") for x in old_add_help):
+                help_msg = f"{help_msg} (with + for more options)"
+
             self.add_argument(
-                f"{default_prefix}h",
-                f"{default_prefix * 2}help",
+                *old_add_help,
                 action="help",
                 default=SUPPRESS,
-                help=_("show help message and exit"),
+                help=_(help_msg),
             )
-        elif old_add_help == "+":
-            self.add_argument(
-                f"{default_prefix}h",
-                f"{default_prefix * 2}help",
-                f"{default_prefix}h+",
-                f"{default_prefix * 2}help+",
-                action="help",
-                default=SUPPRESS,
-                help=_("show help message (with + to show more options) and exit"),
-            )
+
         # restore add_help
         self.add_help = old_add_help  # type: ignore[assignment]
 

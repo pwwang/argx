@@ -219,7 +219,7 @@ def test_help():
     help_str = parser.format_help()
     assert "foo help" in help_str
 
-    parser = ArgumentParser(add_help="+")
+    parser = ArgumentParser(add_help="h,help,h+,help+")
     parser.add_argument(
         "--foo", action=StoreAction, help="foo help", show=False
     )
@@ -228,7 +228,7 @@ def test_help():
     help_str = parser.format_help(plus=False)
     assert "foo help" not in help_str
 
-    parser = ArgumentParser(add_help="+")
+    parser = ArgumentParser(add_help="h,help,h+,help+")
     parser.add_namespace("ns", show=False)
     parser.add_argument("--ns.a", action=StoreAction, help="a help")
     parser.add_argument("--ns.b", action=StoreAction, help="b help")
@@ -237,7 +237,7 @@ def test_help():
 
 
 def test_help_parse(capsys):
-    parser = ArgumentParser(add_help="+")
+    parser = ArgumentParser(add_help="h,help,h+,help+")
     parser.add_namespace("ns", show=False)
     parser.add_argument("--ns.a", action=StoreAction, help="a help")
     parser.add_argument("--ns.b", action=StoreAction, help="b help")
@@ -255,4 +255,5 @@ def test_help_parse(capsys):
     with pytest.raises(SystemExit):
         parser.parse_args(["--help"])
 
+    # all options should be shown as no help + option is defined
     assert "<ns>" in capsys.readouterr().out
