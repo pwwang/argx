@@ -148,10 +148,10 @@ class ArgumentParser(APArgumentParser):
                 old_add_help = "h,help"
 
             old_add_help = old_add_help.replace(" ", "")
-            old_add_help = [
-                f"{default_prefix * (1 if len(x.rstrip("+")) == 1 else 2)}{x}"
-                for x in old_add_help.split(",")
-            ]
+            if len(old_add_help.rstrip("+")) > 1:
+                default_prefix = default_prefix * 2
+
+            old_add_help = [f"{default_prefix}{x}" for x in old_add_help.split(",")]
 
             help_msg = "show this help message and exit"
             if any(x.endswith("+") for x in old_add_help):
