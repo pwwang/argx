@@ -142,8 +142,6 @@ class ArgumentParser(APArgumentParser):
         self.register("type", "path", Path)
         self.register("type", "auto", type_.auto)
 
-        self._action_map: dict[str, Action] = {}
-
         # Add help option to support + for more options
         default_prefix = "-" if "-" in self.prefix_chars else self.prefix_chars[0]
         if old_add_help is not False:
@@ -159,9 +157,11 @@ class ArgumentParser(APArgumentParser):
                 help_msg = f"{help_msg} (with + for more options)"
 
             old_add_help = [
-                f"{default_prefix * 2}{x}"
-                if len(x.rstrip("+")) > 1
-                else f"{default_prefix}{x}"
+                (
+                    f"{default_prefix * 2}{x}"
+                    if len(x.rstrip("+")) > 1
+                    else f"{default_prefix}{x}"
+                )
                 for x in old_add_help
             ]
 
@@ -380,14 +380,12 @@ class ArgumentParser(APArgumentParser):
         if isinstance(action, APArgumentGroup) or (
             not isinstance(action, NamespaceAction) and "." not in action.dest
         ):
-            self._action_map[action.dest] = action
             if action.required:
                 return self._required_actions._add_action(action)
             return super()._add_action(action)
 
         # Do not transform the keys for namespace action
         action.dest = action.option_strings[0].lstrip(self.prefix_chars)
-        self._action_map[action.dest] = action
         # Split the destination into a list of keys
         keys = action.dest.split(".")
         seq = range(len(keys) - 1, 0, -1)
@@ -415,7 +413,11 @@ class ArgumentParser(APArgumentParser):
 
         return group._add_action(action)
 
-    def get_action(self, dest: str) -> Action:
+    def get_action(
+        self,
+        dest: str,
+        include_ns_group: bool = False,
+    ) -> Action | _NamespaceArgumentGroup | None:
         """Get an action by its destination.
 
         Added by `argx`.
@@ -424,9 +426,19 @@ class ArgumentParser(APArgumentParser):
             dest: The destination of the action
 
         Returns:
-            Action: The action
+            Action: The action. None if not found.
         """
-        return self._action_map[dest]
+        if include_ns_group:
+            for action_group in self._action_groups:
+                if isinstance(action_group, _NamespaceArgumentGroup):
+                    if action_group.name == dest:
+                        return action_group
+
+        for action in self._actions:
+            if action.dest == dest:
+                return action
+
+        return None
 
     def add_namespace(
         self,

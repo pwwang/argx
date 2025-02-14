@@ -157,8 +157,15 @@ def test_different_help_option():
 def test_get_action():
     parser = ArgumentParser()
     parser.add_argument("--foo", action="store_true", default=False)
-    parser.add_argument("--bar", action="store_true", default=False)
+    ns = parser.add_namespace("ns")
+    ns.add_argument("--bar", action="store_true", default=False)
+
+    ns_action = parser.get_action("ns", include_ns_group=True)
+    assert ns_action.name == "ns"
+
     foo_action = parser.get_action("foo")
     assert foo_action.default is False
     bar_action = parser.get_action("bar")
     assert bar_action.default is False
+
+    assert parser.get_action("baz") is None
