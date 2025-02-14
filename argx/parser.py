@@ -40,7 +40,7 @@ from .action import (
 from .formatter import ChargedHelpFormatter
 
 if TYPE_CHECKING:
-    from argparse import _ActionT, _FormatterClass
+    from argparse import Action, _FormatterClass
 
 
 @add_attribute("level", 0)
@@ -142,7 +142,7 @@ class ArgumentParser(APArgumentParser):
         self.register("type", "path", Path)
         self.register("type", "auto", type_.auto)
 
-        self._action_map = {}
+        self._action_map: dict[str, Action] = {}
 
         # Add help option to support + for more options
         default_prefix = "-" if "-" in self.prefix_chars else self.prefix_chars[0]
@@ -372,7 +372,7 @@ class ArgumentParser(APArgumentParser):
                             optionalize=optionalize,
                         )
 
-    def _add_action(self, action: _ActionT) -> _ActionT:
+    def _add_action(self, action):
         """Add an action to the parser.
 
         Modify to handle namespace actions, like "--group.abc"
@@ -390,7 +390,7 @@ class ArgumentParser(APArgumentParser):
         self._action_map[action.dest] = action
         # Split the destination into a list of keys
         keys = action.dest.split(".")
-        seq: Iterable[int] = range(len(keys) - 1, 0, -1)
+        seq = range(len(keys) - 1, 0, -1)
         # Add --ns, --ns.subns also to their now group
         if isinstance(action, NamespaceAction):
             seq = [None] + list(seq)
@@ -415,7 +415,7 @@ class ArgumentParser(APArgumentParser):
 
         return group._add_action(action)
 
-    def get_action(self, dest: str) -> _ActionT:
+    def get_action(self, dest: str) -> Action:
         """Get an action by its destination.
 
         Added by `argx`.
@@ -424,7 +424,7 @@ class ArgumentParser(APArgumentParser):
             dest: The destination of the action
 
         Returns:
-            _ActionT: The action
+            Action: The action
         """
         return self._action_map[dest]
 
