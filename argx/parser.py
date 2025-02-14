@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from typing import IO, TYPE_CHECKING, Any, Callable, Iterable, Sequence
+from typing import IO, TYPE_CHECKING, Any, Callable, Sequence
 from pathlib import Path
 from gettext import gettext as _
 from argparse import (
