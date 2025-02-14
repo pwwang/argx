@@ -142,6 +142,8 @@ class ArgumentParser(APArgumentParser):
         self.register("type", "path", Path)
         self.register("type", "auto", type_.auto)
 
+        self._action_map = {}
+
         # Add help option to support + for more options
         default_prefix = "-" if "-" in self.prefix_chars else self.prefix_chars[0]
         if old_add_help is not False:
@@ -378,12 +380,14 @@ class ArgumentParser(APArgumentParser):
         if isinstance(action, APArgumentGroup) or (
             not isinstance(action, NamespaceAction) and "." not in action.dest
         ):
+            self._action_map[action.dest] = action
             if action.required:
                 return self._required_actions._add_action(action)
             return super()._add_action(action)
 
         # Do not transform the keys for namespace action
         action.dest = action.option_strings[0].lstrip(self.prefix_chars)
+        self._action_map[action.dest] = action
         # Split the destination into a list of keys
         keys = action.dest.split(".")
         seq: Iterable[int] = range(len(keys) - 1, 0, -1)
@@ -410,6 +414,19 @@ class ArgumentParser(APArgumentParser):
             group = self.add_namespace(keys[0])
 
         return group._add_action(action)
+
+    def get_action(self, dest: str) -> _ActionT:
+        """Get an action by its destination.
+
+        Added by `argx`.
+
+        Args:
+            dest: The destination of the action
+
+        Returns:
+            _ActionT: The action
+        """
+        return self._action_map[dest]
 
     def add_namespace(
         self,

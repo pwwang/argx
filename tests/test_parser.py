@@ -152,3 +152,13 @@ def test_different_help_option():
     parser.add_argument("-h", required=True)
     parsed = parser.parse_args(["-h", "1"])
     assert parsed.h == "1"
+
+
+def test_get_action():
+    parser = ArgumentParser()
+    parser.add_argument("--foo", action="store_true", default=False)
+    parser.add_argument("--bar", action="store_true", default=False)
+    foo_action = parser.get_action("foo")
+    assert foo_action.default is False
+    bar_action = parser.get_action("bar")
+    assert bar_action.default is False

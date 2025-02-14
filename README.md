@@ -24,6 +24,7 @@ pip install -U argx
 - [Order of groups in help message](#order-of-groups-in-help-message): Allow to add an `order` attribute to groups to change the order of groups in help message
 - [Addtional types](#additional-types): Some additional types to convert the values of arguments
 - [Configuration file to create the parser](#configuration-file-to-create-the-parser): Instead of creating the parser by code, you can also create it by a configuration file
+- [API to get actions](#api-to-get-actions): Get the actions of the parser by API
 - [Pre-parse hook](#pre-parse-hook): A hook to modify the arguments before parsing
 - [Backward compatibility](#backward-compatibility): All features are optional. You can use `argx` as a drop-in replacement for `argparse`.
 
@@ -371,6 +372,22 @@ Usage: myprog [-h] [-a ABC]
 Optional Arguments:
   -h, --help            show help message and exit
   -a ABC, --abc ABC     Optiona a help
+```
+
+### API to get actions
+
+You can get the actions of the parser by `.get_action()`.
+
+```python
+import argx
+
+parser = argx.ArgumentParser()
+parser.add_argument('--foo', type=int)
+
+action = parser.get_action('foo')
+# StoreAction(option_strings=['--foo'], dest='foo', nargs=None, const=None,
+#   default=None, type=<class 'int'>, choices=None, required=False, help=None,
+#   metavar=None)
 ```
 
 ### Pre-parse hook
