@@ -10,18 +10,12 @@ readme = "README.md"
 generate-setup-file = true
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.9"
 python-simpleconf = "^0.6"
 
 [tool.poetry.group.dev.dependencies]
-pytest = [
-    { version = "^7", python = ">=3.7,<3.8" },
-    { version = "^8", python = "^3.8" },
-]
-pytest-cov = [
-    { version = "^4", python = ">=3.7,<3.8" },
-    { version = "^5", python = "^3.8" },
-]
+pytest = "^8"
+pytest-cov = "^6"
 python-simpleconf = {version = "^0.6", extras = ["toml"]}
 
 [build-system]
