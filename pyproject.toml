@@ -11,12 +11,12 @@ generate-setup-file = true
 
 [tool.poetry.dependencies]
 python = "^3.9"
-python-simpleconf = "^0.6"
+python-simpleconf = "^0.7"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8"
 pytest-cov = "^6"
-python-simpleconf = {version = "^0.6", extras = ["toml"]}
+python-simpleconf = {version = "^0.7", extras = ["toml"]}
 
 [build-system]
 requires = ["poetry-core"]

@@ -212,13 +212,13 @@ testing = ["fields", "hunter", "process-tests", "pytest-xdist", "virtualenv"]
 
 [[package]]
 name = "python-simpleconf"
-version = "0.6.1"
+version = "0.7.0"
 description = "Simple configuration management with python."
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "python_simpleconf-0.6.1-py3-none-any.whl", hash = "sha256:9a281533711754301b6798da6cbc253db3794547c3bc6f61c2513ba0cb420461"},
-    {file = "python_simpleconf-0.6.1.tar.gz", hash = "sha256:e9dbaf6f1464ec1d4071898372ba21506705e9f8581c27c97d0486d030d812e4"},
+    {file = "python_simpleconf-0.7.0-py3-none-any.whl", hash = "sha256:16cd75940a4a5b8776f482fdfc1a3708ad598ff6b236e3bb1edbf2362fbef663"},
+    {file = "python_simpleconf-0.7.0.tar.gz", hash = "sha256:fef742e3dee861d20bf591e6e7515c2744b326b201a84c373f86628564bc3f59"},
 ]
 
 [package.dependencies]
@@ -350,4 +350,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "14fc63f6de74f584ca14416c12c91f2dc682ee91d3f00a10f01606d7651acb6f"
+content-hash = "5d22ba1da50ce6e022c4dfb7103a21f8d71718fb295cdef1db3214ee988a5cdc"
