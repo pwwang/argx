@@ -12,7 +12,7 @@ from argparse import (
     Namespace,
 )
 
-from simpleconf import Config
+from simpleconf import Config  # type: ignore[import-untyped]
 
 from . import type_
 from .utils import (
@@ -193,11 +193,11 @@ class ArgumentParser(APArgumentParser):
         """
         action = super().add_subparsers(**kwargs)
         if self._subparsers is not self._positionals:
-            self._subparsers.order = order
+            self._subparsers.order = order  # type: ignore[assignment]
 
         # Add parent to subparsers action
         # So that subparsers.add_parser add parent to the sub-parser
-        action.parent = self
+        action.parent = self  # type: ignore[assignment]
         return action
 
     def add_subparser(self, name: str, **kwargs) -> ArgumentParser | Any:
@@ -230,11 +230,15 @@ class ArgumentParser(APArgumentParser):
             self._subparsers_action = self.add_subparsers(
                 title=_("subcommands"),
                 required=True,
-                dest="COMMAND" if self.level == 0 else f"COMMAND{self.level + 1}",
+                dest=(
+                    "COMMAND"
+                    if self.level == 0  # type: ignore[assignment]
+                    else f"COMMAND{self.level + 1}"  # type: ignore[assignment]
+                ),
             )
         kwargs.setdefault("help", f"The {name} command")
         out = self._subparsers_action.add_parser(name, **kwargs)
-        out.level = self.level + 1
+        out.level = self.level + 1  # type: ignore[assignment]
         return out
 
     add_command = add_subparser
@@ -380,9 +384,11 @@ class ArgumentParser(APArgumentParser):
         if isinstance(action, APArgumentGroup) or (
             not isinstance(action, NamespaceAction) and "." not in action.dest
         ):
-            if action.required:
-                return self._required_actions._add_action(action)
-            return super()._add_action(action)
+            if action.required:  # type: ignore[union-attr]
+                return self._required_actions._add_action(
+                    action  # type: ignore[return-value]
+                )
+            return super()._add_action(action)  # type: ignore[return-value]
 
         # Do not transform the keys for namespace action
         action.dest = action.option_strings[0].lstrip(self.prefix_chars)
@@ -400,7 +406,7 @@ class ArgumentParser(APArgumentParser):
             for action_group in self._action_groups:
                 if (
                     isinstance(action_group, _NamespaceArgumentGroup)
-                    and action_group.name == ns_key
+                    and action_group.name == ns_key  # type: ignore[union-attr]
                 ):
                     group = action_group
                     break
@@ -431,7 +437,7 @@ class ArgumentParser(APArgumentParser):
         if include_ns_group:
             for action_group in self._action_groups:
                 if isinstance(action_group, _NamespaceArgumentGroup):
-                    if action_group.name == dest:
+                    if action_group.name == dest:  # type: ignore[union-attr]
                         return action_group
 
         for action in self._actions:
@@ -461,7 +467,7 @@ class ArgumentParser(APArgumentParser):
         for action_group in self._action_groups:
             if (
                 isinstance(action_group, _NamespaceArgumentGroup)
-                and action_group.name == name
+                and action_group.name == name  # type: ignore[union-attr]
             ):
                 raise ValueError(f"Namespace '{name}' already exists")
 
@@ -469,7 +475,7 @@ class ArgumentParser(APArgumentParser):
             title = f"{_('namespace')} <{name}>"
 
         group = _NamespaceArgumentGroup(self, title, **kwargs)
-        group.name = name
+        group.name = name  # type: ignore[assignment]
         self._action_groups.append(group)
         return group
 
@@ -511,7 +517,7 @@ class ArgumentParser(APArgumentParser):
         # positionals, optionals and user-defined groups
         for action_group in sorted(
             self._action_groups,
-            key=lambda x: (x.order, x.title),
+            key=lambda x: (x.order, x.title),  # type: ignore[return-value]
         ):
             if not plus and not showable(action_group):
                 for action in action_group._group_actions:
@@ -520,12 +526,14 @@ class ArgumentParser(APArgumentParser):
                 continue
 
             formatter.start_section(
-                "\033[1m\033[4m" f"{format_title(action_group.title)}" "\033[0m\033[0m"
+                "\033[1m\033[4m"
+                f"{format_title(action_group.title)}"  # type: ignore[arg-type]
+                "\033[0m\033[0m"
             )
             formatter.add_text(action_group.description)
             formatter.add_arguments(  # type: ignore[call-arg]
                 action_group._group_actions,
-                plus,
+                plus,  # type: ignore[arg-type]
             )
             formatter.end_section()
 
@@ -612,7 +620,7 @@ class ArgumentParser(APArgumentParser):
 
         # Not using super() because _ArgumentGroup can also use it
         return APArgumentGroup._registry_get(
-            self,
+            self,  # type: ignore[return-value]
             registry_name,
             value,
             default,
@@ -661,4 +669,4 @@ class _ArgumentGroup(APArgumentGroup):
 
 @add_attribute("name")
 class _NamespaceArgumentGroup(_ArgumentGroup):
-    ...
+    pass
