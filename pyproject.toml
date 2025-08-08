@@ -12,6 +12,10 @@ generate-setup-file = true
 [tool.poetry.dependencies]
 python = "^3.9"
 python-simpleconf = "^0.7"
+cloudpathlib = {version = "^0.21", optional = true}
+
+[tool.poetry.extras]
+anypath = ["cloudpathlib"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8"

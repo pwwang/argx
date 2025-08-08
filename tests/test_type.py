@@ -1,5 +1,7 @@
 import pytest  # noqa: F401
+from pathlib import Path
 from argx import ArgumentParser
+from cloudpathlib import S3Path
 
 
 def test_py():
@@ -33,6 +35,18 @@ def test_auto():
 
     ns = parser.parse_args(["--foo", 'xy'])
     assert ns.foo == 'xy'
+
+
+def test_anypath():
+    parser = ArgumentParser()
+    parser.add_argument("--foo", type="anypath")
+    ns = parser.parse_args(["--foo", "s3://bucket/path"])
+    assert isinstance(ns.foo, S3Path)
+    assert str(ns.foo) == "s3://bucket/path"
+
+    ns = parser.parse_args(["--foo", "/local/path"])
+    assert isinstance(ns.foo, Path)
+    assert str(ns.foo) == "/local/path"
 
 
 def test_unsupported_type():

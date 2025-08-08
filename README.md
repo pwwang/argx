@@ -22,7 +22,7 @@ pip install -U argx
 - [Clear-append/extend action](#clear_appendextend-action): Store a list of values. Different from `append` and `extend`, the initial value is cleared.
 - [Grouping required arguments by default](#grouping-required-arguments-by-default): Put required arguments in 'required arguments' group, instead of 'optional arguments' group
 - [Order of groups in help message](#order-of-groups-in-help-message): Allow to add an `order` attribute to groups to change the order of groups in help message
-- [Addtional types](#additional-types): Some additional types to convert the values of arguments
+- [Additional types](#additional-types): Some additional types to convert the values of arguments
 - [Configuration file to create the parser](#configuration-file-to-create-the-parser): Instead of creating the parser by code, you can also create it by a configuration file
 - [API to get actions](#api-to-get-actions): Get the actions of the parser by API
 - [Pre-parse hook](#pre-parse-hook): A hook to modify the arguments before parsing
@@ -331,11 +331,15 @@ parser.add_argument('--foo', type='py')
 parser.add_argument('--bar', type='json')
 parser.add_argument('--baz', type='path')
 parser.add_argument('--qux', type='auto')
+parser.add_argument('--quux', type='anypath')  # requires cloudpathlib
 
 args = parser.parse_args(
-    '--foo 1 --bar {"a":1} --baz path/to/file --qux true'.split()
+    '--foo 1 --bar {"a":1} --baz path/to/file --qux true --quux s3://path/to'.split()
 )
-# Namespace(foo=1, bar={'a': 1}, baz=PosixPath('path/to/file'), qux=True)
+# Namespace(
+#   foo=1, bar={'a': 1}, baz=PosixPath('path/to/file'),
+#   qux=True, quux=S3Path('s3://path/to')
+# )
 ```
 
 - `py`: Python expression. The string is evaluated by `ast.literal_eval`.

@@ -12,6 +12,11 @@ def json(s: str) -> Any:
     return json.loads(s)
 
 
+def anypath(s: str) -> Any:
+    from cloudpathlib import AnyPath
+    return AnyPath(s)
+
+
 def auto(s: str) -> Any:
     if s in ("True", "TRUE", "true"):
         return True

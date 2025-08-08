@@ -23,6 +23,7 @@ jobs:
           python -m pip install --upgrade mypy
           python -m pip install poetry
           poetry install -v
+          poetry run pip install cloudpathlib[s3]
       - name: Run flake8
         run: flake8 argx
       - name: Run mypy
