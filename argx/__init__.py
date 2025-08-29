@@ -1,6 +1,14 @@
 """Supercharged argparse for Python"""
 # Shortcuts
-from argparse import Namespace, SUPPRESS
+from argparse import (
+    Namespace,
+    ONE_OR_MORE,
+    OPTIONAL,
+    PARSER,
+    REMAINDER,
+    SUPPRESS,
+    ZERO_OR_MORE,
+)
 
 from .parser import ArgumentParser
 
