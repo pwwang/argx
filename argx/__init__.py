@@ -12,4 +12,4 @@ from argparse import (
 
 from .parser import ArgumentParser
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
