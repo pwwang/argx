@@ -13,8 +13,8 @@ def json(s: str) -> Any:
 
 
 def anypath(s: str) -> Any:
-    from cloudpathlib import AnyPath
-    return AnyPath(s)
+    from panpath import PanPath
+    return PanPath(s)
 
 
 def auto(s: str) -> Any:

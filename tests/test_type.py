@@ -1,7 +1,7 @@
 import pytest  # noqa: F401
 from pathlib import Path
 from argx import ArgumentParser
-from cloudpathlib import S3Path
+from panpath import S3Path
 
 
 def test_py():
