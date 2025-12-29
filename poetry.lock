@@ -215,6 +215,7 @@ description = "Universal sync/async local/cloud path library with pathlib-compat
 optional = true
 python-versions = "<4.0,>=3.9"
 groups = ["main"]
+markers = "extra == \"anypath\""
 files = [
     {file = "panpath-0.4.5-py3-none-any.whl", hash = "sha256:6dd02efa613a99266fac4600e1eb9086aaaa966c9f09cf0f3d61e7ecb253746f"},
     {file = "panpath-0.4.5.tar.gz", hash = "sha256:2e2613dd788e7f137df74df3bd80f1c0644d8a62fbd8573ff8d66f4e3a56333f"},
@@ -473,12 +474,12 @@ files = [
     {file = "typing_extensions-4.15.0-py3-none-any.whl", hash = "sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548"},
     {file = "typing_extensions-4.15.0.tar.gz", hash = "sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466"},
 ]
-markers = {dev = "python_version < \"3.11\""}
+markers = {main = "extra == \"anypath\"", dev = "python_version < \"3.11\""}
 
 [extras]
-anypath = []
+anypath = ["panpath"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "afb6b9ddd2c195d489f8b8879e4da5c4a23cf1496ae862a0775a76a6648c88af"
+content-hash = "262aa3780061fbb81cf6d9b154174081d5502dde1d7f2c9603f1acddde2b97a3"
