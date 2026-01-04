@@ -11,7 +11,7 @@ generate-setup-file = true
 
 [tool.poetry.dependencies]
 python = "^3.9"
-python-simpleconf = "^0.7"
+python-simpleconf = "^0.8"
 panpath = {version = "^0.4", optional = true}
 
 [tool.poetry.extras]
@@ -20,7 +20,7 @@ anypath = ["panpath"]
 [tool.poetry.group.dev.dependencies]
 pytest = "^8"
 pytest-cov = "^6"
-python-simpleconf = {version = "^0.7", extras = ["toml"]}
+python-simpleconf = {version = "^0.8", extras = ["toml"]}
 
 [build-system]
 requires = ["poetry-core"]

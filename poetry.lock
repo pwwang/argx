@@ -210,26 +210,25 @@ files = [
 
 [[package]]
 name = "panpath"
-version = "0.4.5"
+version = "0.4.8"
 description = "Universal sync/async local/cloud path library with pathlib-compatible interface"
-optional = true
+optional = false
 python-versions = "<4.0,>=3.9"
-groups = ["main"]
-markers = "extra == \"anypath\""
+groups = ["main", "dev"]
 files = [
-    {file = "panpath-0.4.5-py3-none-any.whl", hash = "sha256:6dd02efa613a99266fac4600e1eb9086aaaa966c9f09cf0f3d61e7ecb253746f"},
-    {file = "panpath-0.4.5.tar.gz", hash = "sha256:2e2613dd788e7f137df74df3bd80f1c0644d8a62fbd8573ff8d66f4e3a56333f"},
+    {file = "panpath-0.4.8-py3-none-any.whl", hash = "sha256:d3dffda701b4503dccb437fe845a9882c4e3d35c38c26accfbd69d4b924a2dab"},
+    {file = "panpath-0.4.8.tar.gz", hash = "sha256:d6db046824a0924e37bea19afa88eca17fe4c3d8909bea05948ae4ac8f193315"},
 ]
 
 [package.dependencies]
 typing-extensions = ">=4.0.0"
 
 [package.extras]
-all = ["aioboto3 (>=11.0.0)", "aiofiles (>=23.0.0)", "azure-storage-blob (>=12.0.0)", "boto3 (>=1.20.0)", "gcloud-aio-storage (>=8.0.0)", "google-cloud-storage (>=2.0.0)"]
-all-async = ["aioboto3 (>=11.0.0)", "aiofiles (>=23.0.0)", "azure-storage-blob (>=12.0.0)", "gcloud-aio-storage (>=8.0.0)"]
+all = ["aioboto3 (>=11.0.0)", "aiofiles (>=23.0.0)", "azure-storage-blob (>=12.0.0)", "boto3 (>=1.20.0)", "gcloud-aio-storage (>=9.5)", "google-cloud-storage (>=2.0.0)"]
+all-async = ["aioboto3 (>=11.0.0)", "aiofiles (>=23.0.0)", "azure-storage-blob (>=12.0.0)", "gcloud-aio-storage (>=9.5)"]
 all-sync = ["azure-storage-blob (>=12.0.0)", "boto3 (>=1.20.0)", "google-cloud-storage (>=2.0.0)"]
 async-azure = ["aiofiles (>=23.0.0)", "azure-storage-blob (>=12.0.0)"]
-async-gs = ["aiofiles (>=23.0.0)", "gcloud-aio-storage (>=8.0.0)"]
+async-gs = ["aiofiles (>=23.0.0)", "gcloud-aio-storage (>=9.5)"]
 async-s3 = ["aioboto3 (>=11.0.0)", "aiofiles (>=23.0.0)"]
 azure = ["azure-storage-blob (>=12.0.0)"]
 gs = ["google-cloud-storage (>=2.0.0)"]
@@ -312,24 +311,25 @@ testing = ["fields", "hunter", "process-tests", "pytest-xdist", "virtualenv"]
 
 [[package]]
 name = "python-simpleconf"
-version = "0.7.2"
+version = "0.8.0"
 description = "Simple configuration management with python."
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["main", "dev"]
 files = [
-    {file = "python_simpleconf-0.7.2-py3-none-any.whl", hash = "sha256:7d0ce8febd1e0826084ad32c96ffa531c1ec40e7632b2abb67c02c41157bd4ab"},
-    {file = "python_simpleconf-0.7.2.tar.gz", hash = "sha256:03b01c6235f5f288f00ba590564b6bda56c0c1baba71fcf4612caa7c9e63de6f"},
+    {file = "python_simpleconf-0.8.0-py3-none-any.whl", hash = "sha256:2f8b550aa7d9b871516a8264541870036492367d2907c265aa8297d4297558cd"},
+    {file = "python_simpleconf-0.8.0.tar.gz", hash = "sha256:c96d51fd635a410f295c65ddccf5023a24cb1d35df69654a98874a0d37a67791"},
 ]
 
 [package.dependencies]
 diot = ">=0.3.2,<0.4.0"
+panpath = ">=0.4.8,<0.5.0"
 rtoml = {version = ">=0.12,<0.13", optional = true, markers = "sys_platform == \"linux\" and (extra == \"toml\" or extra == \"all\")"}
 tomli = {version = ">=2.0,<3.0", optional = true, markers = "sys_platform != \"linux\" and (extra == \"toml\" or extra == \"all\")"}
 
 [package.extras]
 all = ["iniconfig (>=2.0,<3.0)", "python-dotenv (>=1.1,<2.0)", "pyyaml (>=6,<7)", "rtoml (>=0.12,<0.13) ; sys_platform == \"linux\"", "tomli (>=2.0,<3.0) ; sys_platform != \"linux\""]
-cloud = ["yunpath (>=0.0.4,<0.0.5)"]
+async = ["aiofiles (>=23.0.0)"]
 env = ["python-dotenv (>=1.1,<2.0)"]
 ini = ["iniconfig (>=2.0,<3.0)"]
 toml = ["rtoml (>=0.12,<0.13) ; sys_platform == \"linux\"", "tomli (>=2.0,<3.0) ; sys_platform != \"linux\""]
@@ -474,7 +474,6 @@ files = [
     {file = "typing_extensions-4.15.0-py3-none-any.whl", hash = "sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548"},
     {file = "typing_extensions-4.15.0.tar.gz", hash = "sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466"},
 ]
-markers = {main = "extra == \"anypath\"", dev = "python_version < \"3.11\""}
 
 [extras]
 anypath = ["panpath"]
@@ -482,4 +481,4 @@ anypath = ["panpath"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "262aa3780061fbb81cf6d9b154174081d5502dde1d7f2c9603f1acddde2b97a3"
+content-hash = "a0f46827eabfbd35c452fb76ab5bc4c552c7b2a8d30589d4240f04940c9ddb96"
