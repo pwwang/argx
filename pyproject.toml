@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "argx"
-version = "0.4.1"
+version = "0.4.2"
 description = "Super-charged argparse for python"
 authors = ["pwwang <pwwang@pwwang.com>"]
 license = "MIT"
