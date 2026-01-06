@@ -37,9 +37,9 @@ def test_auto():
     assert ns.foo == 'xy'
 
 
-def test_anypath():
+def test_panpath():
     parser = ArgumentParser()
-    parser.add_argument("--foo", type="anypath")
+    parser.add_argument("--foo", type="panpath")
     ns = parser.parse_args(["--foo", "s3://bucket/path"])
     assert isinstance(ns.foo, S3Path)
     assert str(ns.foo) == "s3://bucket/path"

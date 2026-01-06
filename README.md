@@ -8,6 +8,8 @@ Supercharged argparse for Python
 
 ```bash
 pip install -U argx
+pip install -U argx[panpath]  # to use panpath type
+# see https://github.com/pwwang/panpath
 ```
 
 ## Features enhanced or added
@@ -331,7 +333,7 @@ parser.add_argument('--foo', type='py')
 parser.add_argument('--bar', type='json')
 parser.add_argument('--baz', type='path')
 parser.add_argument('--qux', type='auto')
-parser.add_argument('--quux', type='anypath')  # requires cloudpathlib
+parser.add_argument('--quux', type='panpath')  # requires panpath
 
 args = parser.parse_args(
     '--foo 1 --bar {"a":1} --baz path/to/file --qux true --quux s3://path/to'.split()

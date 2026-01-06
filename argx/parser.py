@@ -141,6 +141,7 @@ class ArgumentParser(APArgumentParser):
         self.register("type", "json", type_.json)
         self.register("type", "path", Path)
         self.register("type", "anypath", type_.anypath)
+        self.register("type", "panpath", type_.panpath)
         self.register("type", "auto", type_.auto)
 
         # Add help option to support + for more options

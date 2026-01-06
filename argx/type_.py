@@ -1,4 +1,5 @@
 """Additional types for argx"""
+import warnings
 from typing import Any
 
 
@@ -12,7 +13,17 @@ def json(s: str) -> Any:
     return json.loads(s)
 
 
-def anypath(s: str) -> Any:
+def anypath(s: str) -> Any:  # pragma: no cover
+    from panpath import PanPath
+    warnings.warn(
+        "Type 'anypath' is deprecated, use 'panpath' instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return PanPath(s)
+
+
+def panpath(s: str) -> Any:
     from panpath import PanPath
     return PanPath(s)
 
