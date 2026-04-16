@@ -163,7 +163,7 @@ class ClearExtendAction(ClearAppendAction):
             items = getattr(ns, dest, None)
             items = copy_items(items)
 
-        items.extend(values)
+        items.extend(values)  # type: ignore[union-attr]
         setattr(ns, dest, items)
 
 
@@ -179,11 +179,13 @@ class NamespaceAction(_StoreAction):
         option_string: str | None = None,
     ) -> None:
         ns, dest = get_ns_dest(namespace, self.dest)
+        parsed = None
         if isinstance(values, str):
             try:
                 parsed = json.loads(values)
-            except json.JSONDecodeError:
+            except json.JSONDecodeError:  # pragma: no cover
                 parser.error(f"Invalid json for {option_string}: {values}")
+                return
 
         if not isinstance(parsed, dict):
             parser.error(f"Invalid json dictionary for {option_string}: {values}")
@@ -204,7 +206,7 @@ class SubParserAction(_SubParsersAction):
 
     def add_parser(self, *args, **kwargs) -> ArgumentParser:
         parser = super().add_parser(*args, **kwargs)
-        parser.parent = self.parent
+        parser.parent = self.parent  # type: ignore[assignment]
         return parser
 
 
@@ -219,8 +221,10 @@ class HelpAction(_HelpAction):
     ) -> None:
         parser.print_help(
             # This is a + option
-            plus=option_string.endswith("+")
+            plus=option_string.endswith("+")  # type: ignore[union-attr]
             # Or no + option defined at all, all options are shown
-            or not any(h.endswith("+") for h in parser.add_help)
+            or not any(
+                h.endswith("+") for h in parser.add_help  # type: ignore[union-attr]
+            )
         )
         parser.exit()

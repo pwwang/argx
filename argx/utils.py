@@ -14,6 +14,8 @@ def import_pyfile(pyfile: PathLike | str) -> dict:
     import importlib.util
 
     spec = importlib.util.spec_from_file_location("config", pyfile)
+    if spec is None or spec.loader is None:  # pragma: no cover
+        raise ImportError(f"Cannot import python file: {pyfile}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     try:
