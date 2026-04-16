@@ -1,31 +1,34 @@
-[tool.poetry]
+[project]
 name = "argx"
 version = "0.4.3"
 description = "Super-charged argparse for python"
-authors = ["pwwang <pwwang@pwwang.com>"]
-license = "MIT"
 readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [{name = "pwwang", email = "pwwang@pwwang.com"}]
+dependencies = [
+    "python-simpleconf>=0.9,<1.0",
+]
 
-[tool.poetry.build]
-generate-setup-file = true
+[project.optional-dependencies]
+anypath = ["panpath>=0.4,<0.5"]
+panpath = ["panpath>=0.4,<0.5"]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-python-simpleconf = "^0.9"
-panpath = {version = "^0.4", optional = true}
-
-[tool.poetry.extras]
-anypath = ["panpath"]
-panpath = ["panpath"]
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8"
-pytest-cov = "^6"
-python-simpleconf = {version = "^0.9", extras = ["toml"]}
+[dependency-groups]
+dev = [
+    "flake8>=7,<8",
+    "mypy>=1,<2",
+    "pytest>=8,<9",
+    "pytest-cov>=6,<7",
+    "python-simpleconf[toml]>=0.9,<1.0",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-data]
+argx = ["py.typed"]
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -44,5 +47,5 @@ junit_family = "xunit1"
 
 [tool.black]
 line-length = 88
-target-version = ['py37', 'py38', 'py39', 'py310', 'py311', 'py312']
+target-version = ['py39', 'py310', 'py311', 'py312']
 include = '\.pyi?$'

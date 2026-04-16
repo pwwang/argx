@@ -11,26 +11,22 @@ jobs:
         python-version: [3.9, "3.10", "3.11", "3.12"]
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Python # Set Python version
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v8.0.0
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --upgrade flake8
-          python -m pip install --upgrade mypy
-          python -m pip install poetry
-          poetry install -v --all-extras
+          uv sync --all-extras
       - name: Run flake8
-        run: flake8 argx
+        run: uv run flake8 argx
       - name: Run mypy
-        run: mypy -p argx
+        run: uv run mypy -p argx
       - name: Test with pytest
-        run: poetry run pytest tests/ --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+        run: uv run pytest tests/ --junitxml=junit/test-results-${{ matrix.python-version }}.xml
       - name: Upload pytest test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pytest-results-${{ matrix.python-version }}
           path: junit/test-results-${{ matrix.python-version }}.xml
@@ -51,13 +47,13 @@ jobs:
       matrix:
         python-version: [3.12]
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Python # Set Python version
-        uses: actions/setup-python@v5
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install poetry
+      - uses: actions/checkout@v6
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v8.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Build the package
+        run: uv build
       - name: Publish to PyPI
-        run: poetry publish --build -u ${{ secrets.PYPI_USER }} -p ${{ secrets.PYPI_PASSWORD }}
+        run: uv publish --username ${{ secrets.PYPI_USER }} --password ${{ secrets.PYPI_PASSWORD }} dist/*
         if: success()

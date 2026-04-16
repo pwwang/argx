@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 This will not be included in the distribution.
-The distribution is managed by poetry
+The distribution metadata and dependencies are managed via pyproject.toml (uv).
 This file is kept only for
 1. Github to index the dependents
 2. pip install -e .

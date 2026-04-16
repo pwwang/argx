@@ -4,9 +4,9 @@
 
   // These tasks can be run from CodeSandbox. Running one will open a log in the app.
   "tasks": {
-    "poetry update && poetry install": {
-      "name": "poetry update && poetry install",
-      "command": "poetry update && poetry install",
+    "uv sync --group dev --all-extras": {
+      "name": "uv sync --group dev --all-extras",
+      "command": "uv sync --group dev --all-extras",
       "runAtStart": true
     }
   }
