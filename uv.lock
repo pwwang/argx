@@ -8,7 +8,7 @@ resolution-markers = [
 
 [[package]]
 name = "argx"
-version = "0.4.3"
+version = "0.4.4a1"
 source = { editable = "." }
 dependencies = [
     { name = "python-simpleconf" },
