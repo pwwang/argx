@@ -67,6 +67,7 @@ class ArgumentParser(APArgumentParser):
         pre_parse: (
             Callable[[ArgumentParser, Sequence[str], Namespace], None] | None
         ) = None,
+        color: bool = True,
     ) -> None:
         """Create an ArgumentParser
 
@@ -95,6 +96,8 @@ class ArgumentParser(APArgumentParser):
             pre_parse (Callable[[ArgumentParser], None], optional): The
                 function to call before parsing.
                 Added by `argx`.
+            color (bool, optional): Whether to use color in the help message.
+                Only supported by python 3.14+
         """
         old_add_help = add_help
         # disable add_help to add it later
@@ -115,6 +118,9 @@ class ArgumentParser(APArgumentParser):
         }
         if sys.version_info >= (3, 9):  # pragma: no cover
             kwargs["exit_on_error"] = exit_on_error
+        if sys.version_info >= (3, 14):  # pragma: no cover
+            # Required by subparsers, which pass color to parser_class
+            kwargs["color"] = color
         super().__init__(**kwargs)
 
         self.exit_on_void = exit_on_void
